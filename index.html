@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Yusef's Masterplan</title>
+    <style>
+      :root {
+        --bg-body: #000000;
+        --bg-card: #1c1c1e;
+        --bg-card-active: #2c2c2e;
+        --accent-ti: #30d158; /* Apple Green */
+        --accent-bs: #0a84ff; /* Apple Blue */
+        --accent-math: #ff9f0a; /* Apple Orange */
+        --accent-pr1: #ff453a; /* Apple Red */
+        --text-primary: #ffffff;
+        --text-secondary: #8e8e93;
+        --border: #38383a;
+        --gold: #ffd60a;
+      }
+
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-primary);
+        margin: 0;
+        padding: 0;
+        padding-bottom: 50px;
+      }
+
+      /* --- HEADER --- */
+      .header {
+        position: sticky;
+        top: 0;
+        background: rgba(28, 28, 30, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 20px;
+        border-bottom: 1px solid var(--border);
+        z-index: 1000;
+      }
+
+      .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .greeting h1 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
+      .greeting p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+      }
+
+      .countdown-badge {
+        background: #333;
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--accent-ti); /* Dynamic via JS later */
+        border: 1px solid var(--border);
+      }
+
+      /* Progress Bar Global */
+      .progress-container {
+        height: 6px;
+        background: #3a3a3c;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 5px;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent-bs), var(--accent-ti));
+        width: 0%;
+        transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+      .progress-text {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-top: 5px;
+      }
+
+      /* --- CONTAINER --- */
+      .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0 15px;
+      }
+
+      /* --- NEXT UP CARD --- */
+      .next-exam-card {
+        background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      }
+      .next-exam-label {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+      }
+      .next-exam-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0;
+      }
+      .next-exam-date {
+        font-size: 1.1rem;
+        color: var(--accent-ti);
+        margin-top: 5px;
+        font-weight: 500;
+      }
+
+      /* --- DAY LIST (ACCORDION) --- */
+      .day-item {
+        background: var(--bg-card);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        overflow: hidden;
+        border: 1px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      /* Gold Glow for completed days */
+      .day-item.all-done {
+        border-color: rgba(255, 214, 10, 0.5);
+        box-shadow: 0 0 15px rgba(255, 214, 10, 0.1);
+      }
+
+      .day-header {
+        padding: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .day-header:active {
+        background-color: var(--bg-card-active);
+      }
+
+      .date-group {
+        display: flex;
+        flex-direction: column;
+      }
+      .date-day {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .date-weekday {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+      }
+
+      .day-focus {
+        flex-grow: 1;
+        margin-left: 20px;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .day-tags {
+        display: flex;
+        gap: 5px;
+      }
+      .tag {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .tag.ti {
+        background-color: var(--accent-ti);
+        box-shadow: 0 0 5px var(--accent-ti);
+      }
+      .tag.bs {
+        background-color: var(--accent-bs);
+        box-shadow: 0 0 5px var(--accent-bs);
+      }
+      .tag.math {
+        background-color: var(--accent-math);
+        box-shadow: 0 0 5px var(--accent-math);
+      }
+      .tag.pr1 {
+        background-color: var(--accent-pr1);
+        box-shadow: 0 0 5px var(--accent-pr1);
+      }
+
+      /* Circular Progress for Day */
+      .day-status {
+        width: 24px;
+        height: 24px;
+        margin-left: 15px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .day-status svg {
+        transform: rotate(-90deg);
+        width: 100%;
+        height: 100%;
+      }
+      .day-status circle {
+        fill: none;
+        stroke-width: 3;
+      }
+      .bg-ring {
+        stroke: #333;
+      }
+      .progress-ring {
+        stroke: var(--text-primary);
+        stroke-dasharray: 63;
+        stroke-dashoffset: 63;
+        transition: stroke-dashoffset 0.3s;
+      }
+      .day-item.all-done .progress-ring {
+        stroke: var(--gold);
+      }
+
+      /* --- TASKS (EXPANDABLE) --- */
+      .day-tasks {
+        max-height: 0;
+        overflow: hidden;
+        background-color: #121214;
+        transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+      }
+
+      .day-tasks.open {
+        max-height: 1000px; /* Arbitrary large number */
+        transition: max-height 0.5s ease-in-out;
+        padding-bottom: 10px;
+        border-top: 1px solid var(--border);
+      }
+
+      .task-row {
+        padding: 15px 20px;
+        display: flex;
+        align-items: flex-start;
+        border-bottom: 1px solid #222;
+      }
+      .task-row:last-child {
+        border-bottom: none;
+      }
+
+      /* Custom Checkbox */
+      .check-container {
+        position: relative;
+        padding-left: 35px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        color: #ddd;
+        line-height: 1.4;
+        display: block;
+      }
+
+      .check-container input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+      }
+
+      .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 22px;
+        width: 22px;
+        background-color: #333;
+        border-radius: 6px;
+        transition: all 0.2s;
+      }
+
+      .check-container:hover input ~ .checkmark {
+        background-color: #444;
+      }
+      .check-container input:checked ~ .checkmark {
+        background-color: var(--accent-ti);
+      }
+
+      /* Different colors for tasks based on subject */
+      .task-row[data-subject="ti"] .check-container input:checked ~ .checkmark {
+        background-color: var(--accent-ti);
+      }
+      .task-row[data-subject="pr1"]
+        .check-container
+        input:checked
+        ~ .checkmark {
+        background-color: var(--accent-pr1);
+      }
+      .task-row[data-subject="bs"] .check-container input:checked ~ .checkmark {
+        background-color: var(--accent-bs);
+      }
+      .task-row[data-subject="math"]
+        .check-container
+        input:checked
+        ~ .checkmark {
+        background-color: var(--accent-math);
+      }
+
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+
+      .check-container input:checked ~ .checkmark:after {
+        display: block;
+      }
+
+      .check-container .checkmark:after {
+        left: 7px;
+        top: 3px;
+        width: 6px;
+        height: 12px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+
+      .check-container input:checked ~ span {
+        text-decoration: line-through;
+        color: #555;
+      }
+
+      /* --- EXAM DAY STYLING --- */
+      .day-item.exam-day-card {
+        background: rgba(48, 209, 88, 0.1); /* Slight green tint default */
+        border: 1px solid var(--accent-ti);
+      }
+      .day-item.exam-day-card .date-day {
+        color: var(--accent-ti);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-top">
+        <div class="greeting">
+          <h1 id="greeting-text">Hi Yusef</h1>
+          <p>Mission: Semester retten</p>
+        </div>
+        <div class="countdown-badge" id="countdown-badge">Loading...</div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-fill" id="global-progress"></div>
+      </div>
+      <div class="progress-text">
+        <span id="progress-percent">0% Fortschritt</span>
+        <span>Bleib dran!</span>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="next-exam-card" id="next-exam-card">
+        <div class="next-exam-label">Nächste Prüfung</div>
+        <h2 class="next-exam-title" id="next-exam-title">
+          Theoretische Informatik
+        </h2>
+        <div class="next-exam-date" id="next-exam-date">
+          12.01.2026 - 10:30 Uhr
+        </div>
+      </div>
+
+      <div id="schedule-container"></div>
+    </div>
+
+    <script>
+      // --- DATA STRUCTURE ---
+      // Hier ist dein "Gehirn". Jede Aufgabe ist einzeln.
+
+      const exams = [
+        {
+          id: "ti_exam",
+          name: "Theoretische Informatik",
+          date: "2026-01-12T10:30:00",
+          color: "var(--accent-ti)",
+        },
+        {
+          id: "bs_exam",
+          name: "Betriebssysteme",
+          date: "2026-01-15T08:00:00",
+          color: "var(--accent-bs)",
+        },
+        {
+          id: "math_exam",
+          name: "Mathematik 1",
+          date: "2026-01-19T13:00:00",
+          color: "var(--accent-math)",
+        },
+        {
+          id: "pr1_exam",
+          name: "Programmieren 1",
+          date: "2026-01-26T08:00:00",
+          color: "var(--accent-pr1)",
+        },
+      ];
+
+      const plan = [
+        {
+          date: "2025-12-26",
+          weekday: "Freitag",
+          focus: "PR1 Basics & TI Start",
+          tags: ["pr1", "ti"],
+          tasks: [
+            {
+              txt: "PR1: Selbsttest 1 komplett auf Papier schreiben (keine IDE!)",
+              subj: "pr1",
+            },
+            { txt: "PR1: Korrektur Selbsttest 1 (streng sein)", subj: "pr1" },
+            {
+              txt: "TI: Kapitel 3 (Alphabete) & 4 (Grammatiken) überfliegen",
+              subj: "ti",
+            },
+            {
+              txt: "TI: Spickzettel Blatt 1 starten: Definitionen aufschreiben",
+              subj: "ti",
+            },
+          ],
+        },
+        {
+          date: "2025-12-27",
+          weekday: "Samstag",
+          focus: "Automaten & Rekursion",
+          tags: ["pr1", "ti"],
+          tasks: [
+            { txt: "PR1: Kapitel 09 (Rekursion) Notizen lesen", subj: "pr1" },
+            {
+              txt: "PR1: 3 Rekursions-Aufgaben handschriftlich lösen",
+              subj: "pr1",
+            },
+            { txt: "TI: Kap 5 (DFA) & 6 (NFA) verstehen", subj: "ti" },
+            {
+              txt: "TI: Spickzettel: NFA zu DFA Umwandlung skizzieren",
+              subj: "ti",
+            },
+          ],
+        },
+        {
+          date: "2025-12-28",
+          weekday: "Sonntag",
+          focus: "Kontextfreie Sprachen",
+          tags: ["ti", "pr1"],
+          tasks: [
+            { txt: "PR1: Selbsttest 2 bearbeiten (Papier!)", subj: "pr1" },
+            { txt: "TI: Kap 9 & 10 (Kellerautomaten) durchgehen", subj: "ti" },
+            { txt: "TI: Spickzettel: Wie zeichnet man einen PDA?", subj: "ti" },
+            { txt: "BS: Abends gemütlich 30 Min Altklausur lesen", subj: "bs" },
+          ],
+        },
+        {
+          date: "2025-12-29",
+          weekday: "Montag",
+          focus: "Turing Maschinen",
+          tags: ["ti"],
+          tasks: [
+            { txt: "TI: Kap 12, 13, 14 (Turing & Halteproblem)", subj: "ti" },
+            { txt: "TI: Spickzettel Entwurf 1 fertigstellen", subj: "ti" },
+            {
+              txt: "PR1: Eine Aufgabe zu 'Collections' lösen (Erhaltung)",
+              subj: "pr1",
+            },
+          ],
+        },
+        {
+          date: "2025-12-30",
+          weekday: "Dienstag",
+          focus: "TI Moodle Übungen",
+          tags: ["ti"],
+          tasks: [
+            { txt: "TI: Moodle 'Garten Übungen' PDF öffnen", subj: "ti" },
+            {
+              txt: "TI: Mindestens 5 schwere Aufgaben daraus lösen",
+              subj: "ti",
+            },
+            {
+              txt: "TI: Lösungen vergleichen & Fehler rot markieren",
+              subj: "ti",
+            },
+          ],
+        },
+        {
+          date: "2025-12-31",
+          weekday: "Mittwoch",
+          focus: "TI Zusatz-Test",
+          tags: ["ti"],
+          tasks: [
+            { txt: "TI: Moodle 'Online Zusatz-Test' machen", subj: "ti" },
+            { txt: "TI: Lücken auf Spickzettel ergänzen", subj: "ti" },
+            { txt: "Abend: Silvester feiern (verdient)", subj: "ti" },
+          ],
+        },
+        {
+          date: "2026-01-01",
+          weekday: "Donnerstag",
+          focus: "BS Intro & Kater-Tag",
+          tags: ["bs"],
+          tasks: [
+            { txt: "Ausschlafen & Kopf klären", subj: "bs" },
+            {
+              txt: "BS: Altklausuren sichten & Systematik verstehen",
+              subj: "bs",
+            },
+            { txt: "PR1: 20 Minuten Code lesen (nur lesen)", subj: "pr1" },
+          ],
+        },
+        {
+          date: "2026-01-02",
+          weekday: "Freitag",
+          focus: "TI Altklausur 1",
+          tags: ["ti"],
+          tasks: [
+            {
+              txt: "TI: Altklausur 1 unter Realbedingungen (90 Min)",
+              subj: "ti",
+            },
+            { txt: "TI: Pause machen", subj: "ti" },
+            { txt: "TI: Korrektur & Nacharbeit der Fehler", subj: "ti" },
+            { txt: "PR1: Exception-Handling üben (Try-Catch)", subj: "pr1" },
+          ],
+        },
+        {
+          date: "2026-01-03",
+          weekday: "Samstag",
+          focus: "TI Altklausur 2",
+          tags: ["ti"],
+          tasks: [
+            { txt: "TI: Altklausur 2 unter Realbedingungen", subj: "ti" },
+            {
+              txt: "TI: Spickzettel finalisieren (Schönschrift/Lesbarkeit)",
+              subj: "ti",
+            },
+            {
+              txt: "TI: Themen wiederholen, die in Altklausur schwer waren",
+              subj: "ti",
+            },
+          ],
+        },
+        {
+          date: "2026-01-04",
+          weekday: "Sonntag",
+          focus: "TI Spickzettel Final",
+          tags: ["ti"],
+          tasks: [
+            { txt: "TI: Spickzettel auf Fehler prüfen", subj: "ti" },
+            { txt: "TI: Alle Definitionen einmal laut aufsagen", subj: "ti" },
+            { txt: "BS: 1 Stunde Antworten auswendig lernen", subj: "bs" },
+          ],
+        },
+        {
+          date: "2026-01-05",
+          weekday: "Montag",
+          focus: "TI Fokus Woche: Start",
+          tags: ["ti"],
+          tasks: [
+            { txt: "FOKUS: Wiederholung Kap 3, 4, 5", subj: "ti" },
+            { txt: "TI: Zeichnen üben (Automaten)", subj: "ti" },
+            { txt: "PR1: Kleine Array-Aufgabe (30 Min max)", subj: "pr1" },
+          ],
+        },
+        {
+          date: "2026-01-06",
+          weekday: "Dienstag",
+          focus: "TI Fokus: Grammatik",
+          tags: ["ti"],
+          tasks: [
+            { txt: "FOKUS: Wiederholung Kap 6, 7, 8", subj: "ti" },
+            { txt: "TI: Reguläre Ausdrücke üben", subj: "ti" },
+            { txt: "PR1: Kleine OOP-Aufgabe (30 Min max)", subj: "pr1" },
+          ],
+        },
+        {
+          date: "2026-01-07",
+          weekday: "Mittwoch",
+          focus: "TI Fokus: Turing",
+          tags: ["ti"],
+          tasks: [
+            { txt: "FOKUS: Wiederholung Kap 9-14", subj: "ti" },
+            { txt: "TI: Pumping Lemma Schema verinnerlichen", subj: "ti" },
+            { txt: "PR1: Code lesen üben", subj: "pr1" },
+          ],
+        },
+        {
+          date: "2026-01-08",
+          weekday: "Donnerstag",
+          focus: "TI Random Testing",
+          tags: ["ti"],
+          tasks: [
+            {
+              txt: "TI: Zufällige Aufgaben aus Übungsblättern greifen",
+              subj: "ti",
+            },
+            {
+              txt: "TI: Spickzettel Check: Finde ich alles sofort?",
+              subj: "ti",
+            },
+          ],
+        },
+        {
+          date: "2026-01-09",
+          weekday: "Freitag",
+          focus: "TI Generalprobe",
+          tags: ["ti"],
+          tasks: [
+            { txt: "TI: Gesamstoff mental durchgehen", subj: "ti" },
+            { txt: "TI: Keine neuen schweren Aufgaben mehr!", subj: "ti" },
+            { txt: "Entspannung am Abend", subj: "ti" },
+          ],
+        },
+        {
+          date: "2026-01-10",
+          weekday: "Samstag",
+          focus: "TI Ruhe",
+          tags: ["ti"],
+          tasks: [
+            { txt: "Leichtes Lesen der Zusammenfassung", subj: "ti" },
+            { txt: "Tasche Packen: Ausweis, Stifte, Spickzettel", subj: "ti" },
+            {
+              txt: "Wecker prüfen (08:00 Start -> früh aufstehen!)",
+              subj: "ti",
+            },
+          ],
+        },
+        {
+          date: "2026-01-11",
+          weekday: "Sonntag",
+          focus: "Kopf frei bekommen",
+          tags: ["ti"],
+          tasks: [
+            { txt: "Spaziergang machen", subj: "ti" },
+            { txt: "Früh ins Bett", subj: "ti" },
+          ],
+        },
+        {
+          date: "2026-01-12",
+          weekday: "Montag",
+          isExam: true,
+          examId: "ti_exam",
+          focus: "TI KLAUSUR",
+          tags: ["ti"],
+          tasks: [
+            { txt: "TI Klausur schreiben (08:00 Uhr)", subj: "ti" },
+            { txt: "Mittagsschlaf / Brain Reset", subj: "ti" },
+            {
+              txt: "Abends: BS Lern-Modus aktivieren (Bulimie Start)",
+              subj: "bs",
+            },
+          ],
+        },
+        {
+          date: "2026-01-13",
+          weekday: "Dienstag",
+          focus: "BS Bulimie I",
+          tags: ["bs"],
+          tasks: [
+            {
+              txt: "BS: 50% der Altklausur-Fragen auswendig lernen",
+              subj: "bs",
+            },
+            { txt: "BS: Wortlaut genau einprägen", subj: "bs" },
+          ],
+        },
+        {
+          date: "2026-01-14",
+          weekday: "Mittwoch",
+          focus: "BS Bulimie II",
+          tags: ["bs"],
+          tasks: [
+            { txt: "BS: Restliche 50% der Fragen lernen", subj: "bs" },
+            { txt: "BS: Alles abfragen lassen (Selbsttest)", subj: "bs" },
+          ],
+        },
+        {
+          date: "2026-01-15",
+          weekday: "Donnerstag",
+          isExam: true,
+          examId: "bs_exam",
+          focus: "BS KLAUSUR",
+          tags: ["bs"],
+          tasks: [
+            { txt: "BS Klausur schreiben (08:00 Uhr)", subj: "bs" },
+            { txt: "Pause", subj: "bs" },
+            { txt: "Mathe: Moodle Probeklausur öffnen", subj: "math" },
+          ],
+        },
+        {
+          date: "2026-01-16",
+          weekday: "Freitag",
+          focus: "Mathe Refresher",
+          tags: ["math"],
+          tasks: [
+            { txt: "Mathe: Induktion Schema aufschreiben", subj: "math" },
+            { txt: "Mathe: Graphentheorie Definitionen lernen", subj: "math" },
+            { txt: "Mathe: Formelblatt erstellen", subj: "math" },
+          ],
+        },
+        {
+          date: "2026-01-17",
+          weekday: "Samstag",
+          focus: "Mathe Routine",
+          tags: ["math"],
+          tasks: [
+            { txt: "Mathe: Komplexe Zahlen & Relationen üben", subj: "math" },
+            { txt: "Mathe: Probeklausur Aufgaben rechnen", subj: "math" },
+            { txt: "Bonus im Hinterkopf behalten (Sicherheit!)", subj: "math" },
+          ],
+        },
+        {
+          date: "2026-01-18",
+          weekday: "Sonntag",
+          focus: "Mathe Final",
+          tags: ["math"],
+          tasks: [
+            { txt: "Mathe: Formelblatt finalisieren", subj: "math" },
+            { txt: "Mathe: Tasche packen", subj: "math" },
+          ],
+        },
+        {
+          date: "2026-01-19",
+          weekday: "Montag",
+          isExam: true,
+          examId: "math_exam",
+          focus: "MATHE KLAUSUR",
+          tags: ["math"],
+          tasks: [
+            { txt: "Mathe Klausur schreiben (13:00 Uhr)", subj: "math" },
+            {
+              txt: "Sofortiger Mental-Switch auf PR1 (Endgegner)",
+              subj: "pr1",
+            },
+          ],
+        },
+        {
+          date: "2026-01-20",
+          weekday: "Dienstag",
+          focus: "PR1 Basics",
+          tags: ["pr1"],
+          tasks: [
+            {
+              txt: "PR1: Datentypen, Schleifen, Methoden wiederholen",
+              subj: "pr1",
+            },
+            { txt: "PR1: Code auf Papier schreiben üben", subj: "pr1" },
+          ],
+        },
+        {
+          date: "2026-01-21",
+          weekday: "Mittwoch",
+          focus: "PR1 OOP",
+          tags: ["pr1"],
+          tasks: [
+            { txt: "PR1: Objekte, Referenzen, Parameter", subj: "pr1" },
+            { txt: "PR1: Übungsaufgaben Kap 3-5 lösen", subj: "pr1" },
+          ],
+        },
+        {
+          date: "2026-01-22",
+          weekday: "Donnerstag",
+          focus: "PR1 Arrays",
+          tags: ["pr1"],
+          tasks: [
+            { txt: "PR1: Kap 07 Arrays intensiv üben", subj: "pr1" },
+            { txt: "PR1: Sortieren & Suchen auf Papier", subj: "pr1" },
+          ],
+        },
+        {
+          date: "2026-01-23",
+          weekday: "Freitag",
+          focus: "PR1 Collections",
+          tags: ["pr1"],
+          tasks: [
+            { txt: "PR1: Lists, Sets, Maps verstehen", subj: "pr1" },
+            { txt: "PR1: Iteratoren verwenden", subj: "pr1" },
+          ],
+        },
+        {
+          date: "2026-01-24",
+          weekday: "Samstag",
+          focus: "PR1 Exceptions",
+          tags: ["pr1"],
+          tasks: [
+            { txt: "PR1: Code-Reading (Wo sind die Fehler?)", subj: "pr1" },
+            { txt: "PR1: Try-Catch Blöcke schreiben", subj: "pr1" },
+          ],
+        },
+        {
+          date: "2026-01-25",
+          weekday: "Sonntag",
+          focus: "PR1 Finale",
+          tags: ["pr1"],
+          tasks: [
+            {
+              txt: "PR1: Syntax-Regeln wiederholen (Semikolons!)",
+              subj: "pr1",
+            },
+            { txt: "PR1: Leichtes Üben, gut schlafen", subj: "pr1" },
+          ],
+        },
+        {
+          date: "2026-01-26",
+          weekday: "Montag",
+          isExam: true,
+          examId: "pr1_exam",
+          focus: "PR1 FINALE",
+          tags: ["pr1"],
+          tasks: [
+            { txt: "PR1 Klausur schreiben (08:00 Uhr)", subj: "pr1" },
+            { txt: "FREIHEIT GENIESSEN", subj: "pr1" },
+          ],
+        },
+      ];
+
+      // --- APP LOGIC ---
+
+      const container = document.getElementById("schedule-container");
+      const greetingText = document.getElementById("greeting-text");
+
+      // Load State
+      let taskState = JSON.parse(localStorage.getItem("yusefTaskState")) || {};
+
+      function saveState() {
+        localStorage.setItem("yusefTaskState", JSON.stringify(taskState));
+        updateGlobalProgress();
+        updateNextExamCard();
+      }
+
+      function render() {
+        container.innerHTML = "";
+
+        // Set Greeting based on time
+        const hour = new Date().getHours();
+        if (hour < 12) greetingText.innerText = "Guten Morgen, Yusef";
+        else if (hour < 18) greetingText.innerText = "Guten Tag, Yusef";
+        else greetingText.innerText = "Guten Abend, Yusef";
+
+        plan.forEach((day, dayIdx) => {
+          const dayId = `day-${dayIdx}`;
+          const totalTasks = day.tasks.length;
+
+          // Calculate day progress
+          let completedCount = 0;
+          day.tasks.forEach((task, taskIdx) => {
+            if (taskState[`${dayId}-t${taskIdx}`]) completedCount++;
+          });
+
+          const isAllDone = completedCount === totalTasks && totalTasks > 0;
+          const percent =
+            totalTasks === 0 ? 0 : (completedCount / totalTasks) * 63; // 63 is circumference
+          const dashOffset = 63 - percent;
+
+          // Create Elements
+          const dayItem = document.createElement("div");
+          dayItem.className = `day-item ${isAllDone ? "all-done" : ""} ${
+            day.isExam ? "exam-day-card" : ""
+          }`;
+
+          // Tags HTML
+          const tagsHtml = day.tags
+            .map((t) => `<span class="tag ${t}"></span>`)
+            .join("");
+
+          // Format Date
+          const dateObj = new Date(day.date);
+          const dateStr = dateObj.toLocaleDateString("de-DE", {
+            day: "2-digit",
+            month: "2-digit",
+          });
+
+          dayItem.innerHTML = `
+                    <div class="day-header" onclick="toggleDay(this)">
+                        <div class="date-group">
+                            <span class="date-day">${dateStr}</span>
+                            <span class="date-weekday">${day.weekday}</span>
+                        </div>
+                        <div class="day-focus">
+                            <div class="day-tags" style="margin-bottom:4px">${tagsHtml}</div>
+                            ${day.focus}
+                        </div>
+                        <div class="day-status">
+                            <svg>
+                                <circle class="bg-ring" cx="12" cy="12" r="10"></circle>
+                                <circle class="progress-ring" cx="12" cy="12" r="10" style="stroke-dashoffset: ${dashOffset}"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="day-tasks">
+                        ${day.tasks
+                          .map((task, tIdx) => {
+                            const tId = `${dayId}-t${tIdx}`;
+                            const isChecked = taskState[tId] ? "checked" : "";
+                            return `
+                                <div class="task-row" data-subject="${task.subj}">
+                                    <label class="check-container">
+                                        <input type="checkbox" id="${tId}" ${isChecked} onchange="toggleTask('${dayId}', '${tId}')">
+                                        <span class="checkmark"></span>
+                                        <span>${task.txt}</span>
+                                    </label>
+                                </div>
+                            `;
+                          })
+                          .join("")}
+                    </div>
+                `;
+
+          container.appendChild(dayItem);
+        });
+
+        updateGlobalProgress();
+        updateNextExamCard();
+        startCountdown();
+      }
+
+      function toggleDay(header) {
+        const tasksDiv = header.nextElementSibling;
+        const isOpen = tasksDiv.classList.contains("open");
+
+        // Close all others (optional - can remove if you want multiple open)
+        document.querySelectorAll(".day-tasks.open").forEach((el) => {
+          if (el !== tasksDiv) el.classList.remove("open");
+        });
+
+        tasksDiv.classList.toggle("open");
+      }
+
+      function toggleTask(dayId, taskId) {
+        const checkbox = document.getElementById(taskId);
+        taskState[taskId] = checkbox.checked;
+        saveState();
+
+        // Re-render only progress (visually update classes without full re-render for performance)
+        // But full render is safer to update the "All Done" gold status
+        render();
+
+        // Re-open the day we just clicked
+        setTimeout(() => {
+          const dayIdx = parseInt(dayId.split("-")[1]);
+          const dayItems = document.querySelectorAll(".day-item");
+          if (dayItems[dayIdx]) {
+            const header = dayItems[dayIdx].querySelector(".day-header");
+            const tasks = dayItems[dayIdx].querySelector(".day-tasks");
+            tasks.classList.add("open");
+            // Scroll slightly if needed
+          }
+        }, 50);
+      }
+
+      function updateGlobalProgress() {
+        let total = 0;
+        let done = 0;
+
+        plan.forEach((day, dayIdx) => {
+          day.tasks.forEach((task, taskIdx) => {
+            total++;
+            if (taskState[`day-${dayIdx}-t${taskIdx}`]) done++;
+          });
+        });
+
+        const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+        document.getElementById("global-progress").style.width = `${percent}%`;
+        document.getElementById(
+          "progress-percent"
+        ).innerText = `${percent}% Fortschritt`;
+      }
+
+      function updateNextExamCard() {
+        const now = new Date();
+        let next = null;
+        for (let e of exams) {
+          if (new Date(e.date) > now) {
+            next = e;
+            break;
+          }
+        }
+
+        if (next) {
+          document.getElementById("next-exam-title").innerText = next.name;
+          document.getElementById("next-exam-title").style.color = next.color;
+
+          const d = new Date(next.date);
+          const day = d.toLocaleDateString("de-DE", {
+            weekday: "short",
+            day: "2-digit",
+            month: "2-digit",
+          });
+          const time = d.toLocaleTimeString("de-DE", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          document.getElementById(
+            "next-exam-date"
+          ).innerText = `${day} - ${time} Uhr`;
+
+          // Border color
+          document.getElementById("next-exam-card").style.borderColor =
+            next.color;
+        } else {
+          document.getElementById("next-exam-title").innerText =
+            "Alles geschafft!";
+          document.getElementById("next-exam-date").innerText =
+            "Genieß die Freiheit.";
+          document.getElementById("next-exam-card").style.borderColor =
+            "#ffd60a";
+        }
+      }
+
+      function startCountdown() {
+        setInterval(() => {
+          const now = new Date();
+          let next = null;
+          for (let e of exams) {
+            if (new Date(e.date) > now) {
+              next = e;
+              break;
+            }
+          }
+
+          if (next) {
+            const diff = new Date(next.date) - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor(
+              (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+            );
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+            document.getElementById(
+              "countdown-badge"
+            ).innerText = `Noch ${days}d ${hours}h ${minutes}m bis ${next.name}`;
+            document.getElementById("countdown-badge").style.color = next.color;
+            document.getElementById("countdown-badge").style.borderColor =
+              next.color;
+          }
+        }, 1000);
+      }
+
+      // Init
+      render();
+    </script>
+  </body>
+</html>
