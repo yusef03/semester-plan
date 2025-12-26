@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Yusef's Masterplan</title>
+    <title>Yusef's Lernplan</title>
     <style>
       :root {
         --bg-body: #000000;
@@ -399,7 +399,7 @@
 
     <script>
       // --- DATA STRUCTURE ---
-      // Hier ist dein "Gehirn". Jede Aufgabe ist einzeln.
+      // Die Daten wurden basierend auf dem Gespräch (Lücken-Management Strategie) angepasst.
 
       const exams = [
         {
@@ -432,20 +432,15 @@
         {
           date: "2025-12-26",
           weekday: "Freitag",
-          focus: "PR1 Basics & TI Start",
-          tags: ["pr1", "ti"],
+          focus: "PR1 & TI Start",
+          tags: ["ti", "pr1"],
           tasks: [
             {
-              txt: "PR1: Selbsttest 1 komplett auf Papier schreiben (keine IDE!)",
+              txt: "PR1: Kapitel 1 & 2.",
               subj: "pr1",
             },
-            { txt: "PR1: Korrektur Selbsttest 1 (streng sein)", subj: "pr1" },
             {
-              txt: "TI: Kapitel 3 (Alphabete) & 4 (Grammatiken) überfliegen",
-              subj: "ti",
-            },
-            {
-              txt: "TI: Spickzettel Blatt 1 starten: Definitionen aufschreiben",
+              txt: "TI:  Kap 3-4 (Alphabete, Automaten)",
               subj: "ti",
             },
           ],
@@ -453,60 +448,79 @@
         {
           date: "2025-12-27",
           weekday: "Samstag",
-          focus: "Automaten & Rekursion",
-          tags: ["pr1", "ti"],
+          focus: "Automaten & PR1 Basics",
+          tags: ["ti", "pr1"],
           tasks: [
-            { txt: "PR1: Kapitel 09 (Rekursion) Notizen lesen", subj: "pr1" },
             {
-              txt: "PR1: 3 Rekursions-Aufgaben handschriftlich lösen",
+              txt: "TI (Vormittag): Kap  5, 6 Skripte + U14 Aufgaben machen",
+              subj: "ti",
+            },
+            {
+              txt: "PR1 (Nachmittag): PR1_07 (Arrays) & PR1_08 (Collections) Folien",
               subj: "pr1",
             },
-            { txt: "TI: Kap 5 (DFA) & 6 (NFA) verstehen", subj: "ti" },
             {
-              txt: "TI: Spickzettel: NFA zu DFA Umwandlung skizzieren",
-              subj: "ti",
+              txt: "Mathe (Abend): 1h Just for Fun (Logik/Mengen) - Flow halten",
+              subj: "math",
             },
           ],
         },
         {
           date: "2025-12-28",
           weekday: "Sonntag",
-          focus: "Kontextfreie Sprachen",
+          focus: "RegEx & PR1 Rekursion",
           tags: ["ti", "pr1"],
           tasks: [
-            { txt: "PR1: Selbsttest 2 bearbeiten (Papier!)", subj: "pr1" },
-            { txt: "TI: Kap 9 & 10 (Kellerautomaten) durchgehen", subj: "ti" },
-            { txt: "TI: Spickzettel: Wie zeichnet man einen PDA?", subj: "ti" },
-            { txt: "BS: Abends gemütlich 30 Min Altklausur lesen", subj: "bs" },
+            {
+              txt: "TI: Kap 7 (RegEx) & 8 (Reg. Sprachen) + Moodle Zusatztest",
+              subj: "ti",
+            },
+            {
+              txt: "PR1: PR1_09 Rekursion verstehen (Klausur-Killer!)",
+              subj: "pr1",
+            },
+            {
+              txt: "TI: Spickzettel Seite 1 (Roh-Entwurf) starten",
+              subj: "ti",
+            },
           ],
         },
         {
           date: "2025-12-29",
           weekday: "Montag",
-          focus: "Turing Maschinen",
-          tags: ["ti"],
+          focus: "Kontextfrei & BS Intro",
+          tags: ["ti", "bs", "math"],
           tasks: [
-            { txt: "TI: Kap 12, 13, 14 (Turing & Halteproblem)", subj: "ti" },
-            { txt: "TI: Spickzettel Entwurf 1 fertigstellen", subj: "ti" },
             {
-              txt: "PR1: Eine Aufgabe zu 'Collections' lösen (Erhaltung)",
-              subj: "pr1",
+              txt: "TI: Kap 9, 10, 11 (Kontextfrei & Kellerautomaten) - Schwer!",
+              subj: "ti",
+            },
+            {
+              txt: "BS: 2h Altklausuren nur 'lesen' (Muster erkennen)",
+              subj: "bs",
+            },
+            {
+              txt: "Mathe: Induktion & Komplexe Zahlen (2-3 Altklausur-Aufgaben)",
+              subj: "math",
             },
           ],
         },
         {
           date: "2025-12-30",
           weekday: "Dienstag",
-          focus: "TI Moodle Übungen",
-          tags: ["ti"],
+          focus: "Turing & PR1 Test",
+          tags: ["ti", "pr1"],
           tasks: [
-            { txt: "TI: Moodle 'Garten Übungen' PDF öffnen", subj: "ti" },
             {
-              txt: "TI: Mindestens 5 schwere Aufgaben daraus lösen",
+              txt: "TI: Kap 12, 13, 14 (Turing & Halteproblem)",
               subj: "ti",
             },
             {
-              txt: "TI: Lösungen vergleichen & Fehler rot markieren",
+              txt: "PR1: PR1_ST1.drvd.pdf (Selbsttest 1) komplett machen",
+              subj: "pr1",
+            },
+            {
+              txt: "TI: Spickzettel Seite 2 weiterführen",
               subj: "ti",
             },
           ],
@@ -514,116 +528,155 @@
         {
           date: "2025-12-31",
           weekday: "Mittwoch",
-          focus: "TI Zusatz-Test",
+          focus: "TI Check & Silvester",
           tags: ["ti"],
           tasks: [
-            { txt: "TI: Moodle 'Online Zusatz-Test' machen", subj: "ti" },
-            { txt: "TI: Lücken auf Spickzettel ergänzen", subj: "ti" },
-            { txt: "Abend: Silvester feiern (verdient)", subj: "ti" },
+            {
+              txt: "TI: Eine Altklausur (z.B. WS2122) ansehen (Wissens-Check)",
+              subj: "ti",
+            },
+            {
+              txt: "Mittag: Feierabend & Silvester genießen",
+              subj: "ti",
+            },
           ],
         },
         {
           date: "2026-01-01",
           weekday: "Donnerstag",
-          focus: "BS Intro & Kater-Tag",
-          tags: ["bs"],
+          focus: "BS & Math (Kater-Tag)",
+          tags: ["bs", "math"],
           tasks: [
-            { txt: "Ausschlafen & Kopf klären", subj: "bs" },
             {
-              txt: "BS: Altklausuren sichten & Systematik verstehen",
+              txt: "BS: Altklausuren lernen (Flashcards/Abschreiben)",
               subj: "bs",
             },
-            { txt: "PR1: 20 Minuten Code lesen (nur lesen)", subj: "pr1" },
+            {
+              txt: "Mathe: Wiederholung Relationen & Funktionen",
+              subj: "math",
+            },
           ],
         },
         {
           date: "2026-01-02",
           weekday: "Freitag",
-          focus: "TI Altklausur 1",
-          tags: ["ti"],
+          focus: "TI U14 & PR1 Test 2",
+          tags: ["ti", "pr1"],
           tasks: [
             {
-              txt: "TI: Altklausur 1 unter Realbedingungen (90 Min)",
+              txt: "TI: TI_U14_Garten komplett fertig machen",
               subj: "ti",
             },
-            { txt: "TI: Pause machen", subj: "ti" },
-            { txt: "TI: Korrektur & Nacharbeit der Fehler", subj: "ti" },
-            { txt: "PR1: Exception-Handling üben (Try-Catch)", subj: "pr1" },
+            {
+              txt: "PR1: PR1_ST2.drvd.pdf (Selbsttest 2) bearbeiten & Fehler suchen",
+              subj: "pr1",
+            },
+            {
+              txt: "BS: Abends 30 Min Altklausur-Fragen",
+              subj: "bs",
+            },
           ],
         },
         {
           date: "2026-01-03",
           weekday: "Samstag",
-          focus: "TI Altklausur 2",
-          tags: ["ti"],
+          focus: "TI Lücken & PR1",
+          tags: ["ti", "pr1"],
           tasks: [
-            { txt: "TI: Altklausur 2 unter Realbedingungen", subj: "ti" },
             {
-              txt: "TI: Spickzettel finalisieren (Schönschrift/Lesbarkeit)",
+              txt: "TI: Lücken auf Spickzettel füllen",
               subj: "ti",
             },
             {
-              txt: "TI: Themen wiederholen, die in Altklausur schwer waren",
-              subj: "ti",
+              txt: "PR1: Fehleranalyse ST1 & ST2 (Warum falsch?)",
+              subj: "pr1",
+            },
+            {
+              txt: "BS: 30 Min Wiederholung",
+              subj: "bs",
             },
           ],
         },
         {
           date: "2026-01-04",
           weekday: "Sonntag",
-          focus: "TI Spickzettel Final",
-          tags: ["ti"],
+          focus: "TI Spickzettel & PR1",
+          tags: ["ti", "pr1"],
           tasks: [
-            { txt: "TI: Spickzettel auf Fehler prüfen", subj: "ti" },
-            { txt: "TI: Alle Definitionen einmal laut aufsagen", subj: "ti" },
-            { txt: "BS: 1 Stunde Antworten auswendig lernen", subj: "bs" },
+            {
+              txt: "TI: Spickzettel Struktur finalisieren",
+              subj: "ti",
+            },
+            {
+              txt: "PR1: Collections & Arrays Code lesen üben",
+              subj: "pr1",
+            },
+            {
+              txt: "BS: 30 Min Wiederholung",
+              subj: "bs",
+            },
           ],
         },
         {
           date: "2026-01-05",
           weekday: "Montag",
-          focus: "TI Fokus Woche: Start",
-          tags: ["ti"],
+          focus: "Simulierung Tag 1",
+          tags: ["ti", "math"],
           tasks: [
-            { txt: "FOKUS: Wiederholung Kap 3, 4, 5", subj: "ti" },
-            { txt: "TI: Zeichnen üben (Automaten)", subj: "ti" },
-            { txt: "PR1: Kleine Array-Aufgabe (30 Min max)", subj: "pr1" },
+            {
+              txt: "TI: Altklausur 1 unter Zeitdruck simulieren",
+              subj: "ti",
+            },
+            {
+              txt: "Mathe: Probeklausur (80 Min) rechnen (Zeitgefühl)",
+              subj: "math",
+            },
           ],
         },
         {
           date: "2026-01-06",
           weekday: "Dienstag",
-          focus: "TI Fokus: Grammatik",
+          focus: "Simulierung Tag 2",
           tags: ["ti"],
           tasks: [
-            { txt: "FOKUS: Wiederholung Kap 6, 7, 8", subj: "ti" },
-            { txt: "TI: Reguläre Ausdrücke üben", subj: "ti" },
-            { txt: "PR1: Kleine OOP-Aufgabe (30 Min max)", subj: "pr1" },
+            {
+              txt: "TI: Altklausur 2 unter Zeitdruck simulieren",
+              subj: "ti",
+            },
+            {
+              txt: "TI: Analyse: Wo fehlen Punkte?",
+              subj: "ti",
+            },
           ],
         },
         {
           date: "2026-01-07",
           weekday: "Mittwoch",
-          focus: "TI Fokus: Turing",
+          focus: "TI Feinschliff",
           tags: ["ti"],
           tasks: [
-            { txt: "FOKUS: Wiederholung Kap 9-14", subj: "ti" },
-            { txt: "TI: Pumping Lemma Schema verinnerlichen", subj: "ti" },
-            { txt: "PR1: Code lesen üben", subj: "pr1" },
+            {
+              txt: "TI: Online-Zusatztest durchgehen",
+              subj: "ti",
+            },
+            {
+              txt: "TI: Spickzettel auswendig lernen (für Speed)",
+              subj: "ti",
+            },
           ],
         },
         {
           date: "2026-01-08",
           weekday: "Donnerstag",
-          focus: "TI Random Testing",
+          focus: "TI Tunnel",
           tags: ["ti"],
           tasks: [
             {
-              txt: "TI: Zufällige Aufgaben aus Übungsblättern greifen",
+              txt: "TI: Nur noch Theorie & Definitionen",
               subj: "ti",
             },
             {
-              txt: "TI: Spickzettel Check: Finde ich alles sofort?",
+              txt: "TI: Pumping Lemma & Halteproblem Beweise checken",
               subj: "ti",
             },
           ],
@@ -631,24 +684,31 @@
         {
           date: "2026-01-09",
           weekday: "Freitag",
-          focus: "TI Generalprobe",
+          focus: "TI Tunnel",
           tags: ["ti"],
           tasks: [
-            { txt: "TI: Gesamstoff mental durchgehen", subj: "ti" },
-            { txt: "TI: Keine neuen schweren Aufgaben mehr!", subj: "ti" },
-            { txt: "Entspannung am Abend", subj: "ti" },
+            {
+              txt: "TI: Wiederholung aller Grammatik-Typen",
+              subj: "ti",
+            },
+            {
+              txt: "TI: Automaten zeichnen üben",
+              subj: "ti",
+            },
           ],
         },
         {
           date: "2026-01-10",
           weekday: "Samstag",
-          focus: "TI Ruhe",
+          focus: "TI Tunnel",
           tags: ["ti"],
           tasks: [
-            { txt: "Leichtes Lesen der Zusammenfassung", subj: "ti" },
-            { txt: "Tasche Packen: Ausweis, Stifte, Spickzettel", subj: "ti" },
             {
-              txt: "Wecker prüfen (08:00 Start -> früh aufstehen!)",
+              txt: "TI: Spickzettel final prüfen (A4 beidseitig)",
+              subj: "ti",
+            },
+            {
+              txt: "TI: Tasche packen",
               subj: "ti",
             },
           ],
@@ -656,11 +716,21 @@
         {
           date: "2026-01-11",
           weekday: "Sonntag",
-          focus: "Kopf frei bekommen",
+          focus: "Ruhe vor dem Sturm",
           tags: ["ti"],
           tasks: [
-            { txt: "Spaziergang machen", subj: "ti" },
-            { txt: "Früh ins Bett", subj: "ti" },
+            {
+              txt: "Spaziergang / Kopf frei kriegen",
+              subj: "ti",
+            },
+            {
+              txt: "Leichtes Lesen der Zusammenfassung",
+              subj: "ti",
+            },
+            {
+              txt: "Früh ins Bett!",
+              subj: "ti",
+            },
           ],
         },
         {
@@ -669,12 +739,18 @@
           isExam: true,
           examId: "ti_exam",
           focus: "TI KLAUSUR",
-          tags: ["ti"],
+          tags: ["ti", "bs"],
           tasks: [
-            { txt: "TI Klausur schreiben (08:00 Uhr)", subj: "ti" },
-            { txt: "Mittagsschlaf / Brain Reset", subj: "ti" },
             {
-              txt: "Abends: BS Lern-Modus aktivieren (Bulimie Start)",
+              txt: "10:30 TI Klausur schreiben",
+              subj: "ti",
+            },
+            {
+              txt: "Pause bis 16:00",
+              subj: "ti",
+            },
+            {
+              txt: "Abends: BS 'Bulimie-Lernen' Start (Altklausuren)",
               subj: "bs",
             },
           ],
@@ -682,24 +758,33 @@
         {
           date: "2026-01-13",
           weekday: "Dienstag",
-          focus: "BS Bulimie I",
-          tags: ["bs"],
+          focus: "BS Tunnel",
+          tags: ["bs", "pr1"],
           tasks: [
             {
-              txt: "BS: 50% der Altklausur-Fragen auswendig lernen",
+              txt: "BS: Altklausuren ballern (Auswendig!)",
               subj: "bs",
             },
-            { txt: "BS: Wortlaut genau einprägen", subj: "bs" },
+            {
+              txt: "Abends: 1h PR1 Code lesen (Logik erhalten)",
+              subj: "pr1",
+            },
           ],
         },
         {
           date: "2026-01-14",
           weekday: "Mittwoch",
-          focus: "BS Bulimie II",
+          focus: "BS Tunnel Final",
           tags: ["bs"],
           tasks: [
-            { txt: "BS: Restliche 50% der Fragen lernen", subj: "bs" },
-            { txt: "BS: Alles abfragen lassen (Selbsttest)", subj: "bs" },
+            {
+              txt: "BS: Wiederholung aller 7-8 Standardaufgaben",
+              subj: "bs",
+            },
+            {
+              txt: "BS: Selbstabfrage",
+              subj: "bs",
+            },
           ],
         },
         {
@@ -708,33 +793,52 @@
           isExam: true,
           examId: "bs_exam",
           focus: "BS KLAUSUR",
-          tags: ["bs"],
+          tags: ["bs", "math"],
           tasks: [
-            { txt: "BS Klausur schreiben (08:00 Uhr)", subj: "bs" },
-            { txt: "Pause", subj: "bs" },
-            { txt: "Mathe: Moodle Probeklausur öffnen", subj: "math" },
+            {
+              txt: "08:00 BS Klausur schreiben",
+              subj: "bs",
+            },
+            {
+              txt: "Mittagsschlaf",
+              subj: "bs",
+            },
+            {
+              txt: "15:00 Start Mathe-Tunnel: Spickzettel finalisieren",
+              subj: "math",
+            },
           ],
         },
         {
           date: "2026-01-16",
           weekday: "Freitag",
-          focus: "Mathe Refresher",
+          focus: "Mathe Tunnel",
           tags: ["math"],
           tasks: [
-            { txt: "Mathe: Induktion Schema aufschreiben", subj: "math" },
-            { txt: "Mathe: Graphentheorie Definitionen lernen", subj: "math" },
-            { txt: "Mathe: Formelblatt erstellen", subj: "math" },
+            {
+              txt: "Mathe: Graphentheorie & Zahlentheorie (Punkte!)",
+              subj: "math",
+            },
+            {
+              txt: "Mathe: Altklausur WS1920 rechnen",
+              subj: "math",
+            },
           ],
         },
         {
           date: "2026-01-17",
           weekday: "Samstag",
-          focus: "Mathe Routine",
+          focus: "Mathe Tunnel",
           tags: ["math"],
           tasks: [
-            { txt: "Mathe: Komplexe Zahlen & Relationen üben", subj: "math" },
-            { txt: "Mathe: Probeklausur Aufgaben rechnen", subj: "math" },
-            { txt: "Bonus im Hinterkopf behalten (Sicherheit!)", subj: "math" },
+            {
+              txt: "Mathe: Altklausur WS2021 rechnen",
+              subj: "math",
+            },
+            {
+              txt: "Mathe: Induktion sicher beherrschen",
+              subj: "math",
+            },
           ],
         },
         {
@@ -743,8 +847,14 @@
           focus: "Mathe Final",
           tags: ["math"],
           tasks: [
-            { txt: "Mathe: Formelblatt finalisieren", subj: "math" },
-            { txt: "Mathe: Tasche packen", subj: "math" },
+            {
+              txt: "Mathe: Formelsammlung Check",
+              subj: "math",
+            },
+            {
+              txt: "Tasche packen (Taschenrechner?)",
+              subj: "math",
+            },
           ],
         },
         {
@@ -753,11 +863,14 @@
           isExam: true,
           examId: "math_exam",
           focus: "MATHE KLAUSUR",
-          tags: ["math"],
+          tags: ["math", "pr1"],
           tasks: [
-            { txt: "Mathe Klausur schreiben (13:00 Uhr)", subj: "math" },
             {
-              txt: "Sofortiger Mental-Switch auf PR1 (Endgegner)",
+              txt: "13:00 Mathe Klausur schreiben",
+              subj: "math",
+            },
+            {
+              txt: "Sofortiger Mental-Switch: PR1 (Endgegner)",
               subj: "pr1",
             },
           ],
@@ -765,67 +878,97 @@
         {
           date: "2026-01-20",
           weekday: "Dienstag",
-          focus: "PR1 Basics",
+          focus: "PR1 Intensiv: Altklausuren",
           tags: ["pr1"],
           tasks: [
             {
-              txt: "PR1: Datentypen, Schleifen, Methoden wiederholen",
+              txt: "PR1: Altklausur PR1_WS2122_Garmann bearbeiten",
               subj: "pr1",
             },
-            { txt: "PR1: Code auf Papier schreiben üben", subj: "pr1" },
+            {
+              txt: "WICHTIG: Auf Papier programmieren!",
+              subj: "pr1",
+            },
           ],
         },
         {
           date: "2026-01-21",
           weekday: "Mittwoch",
-          focus: "PR1 OOP",
+          focus: "PR1 Intensiv: Fehler",
           tags: ["pr1"],
           tasks: [
-            { txt: "PR1: Objekte, Referenzen, Parameter", subj: "pr1" },
-            { txt: "PR1: Übungsaufgaben Kap 3-5 lösen", subj: "pr1" },
+            {
+              txt: "PR1: ST1 & ST2 nochmal die Fehler anschauen",
+              subj: "pr1",
+            },
+            {
+              txt: "PR1: Prog 1 SS25 WHD Klausur durchgehen",
+              subj: "pr1",
+            },
           ],
         },
         {
           date: "2026-01-22",
           weekday: "Donnerstag",
-          focus: "PR1 Arrays",
+          focus: "PR1: Collections & Rekursion",
           tags: ["pr1"],
           tasks: [
-            { txt: "PR1: Kap 07 Arrays intensiv üben", subj: "pr1" },
-            { txt: "PR1: Sortieren & Suchen auf Papier", subj: "pr1" },
+            {
+              txt: "PR1: Thema 'Collections' sicherstellen",
+              subj: "pr1",
+            },
+            {
+              txt: "PR1: Rekursions-Aufgaben üben bis es sitzt",
+              subj: "pr1",
+            },
           ],
         },
         {
           date: "2026-01-23",
           weekday: "Freitag",
-          focus: "PR1 Collections",
+          focus: "PR1: Exceptions",
           tags: ["pr1"],
           tasks: [
-            { txt: "PR1: Lists, Sets, Maps verstehen", subj: "pr1" },
-            { txt: "PR1: Iteratoren verwenden", subj: "pr1" },
+            {
+              txt: "PR1: Exceptions fangen & werfen üben",
+              subj: "pr1",
+            },
+            {
+              txt: "PR1: File I/O Basics checken",
+              subj: "pr1",
+            },
           ],
         },
         {
           date: "2026-01-24",
           weekday: "Samstag",
-          focus: "PR1 Exceptions",
+          focus: "PR1: Spickzettel Neu",
           tags: ["pr1"],
           tasks: [
-            { txt: "PR1: Code-Reading (Wo sind die Fehler?)", subj: "pr1" },
-            { txt: "PR1: Try-Catch Blöcke schreiben", subj: "pr1" },
+            {
+              txt: "PR1: Spickzettel NEU schreiben (Syntax-Hilfen)",
+              subj: "pr1",
+            },
+            {
+              txt: "PR1: Code-Reading üben",
+              subj: "pr1",
+            },
           ],
         },
         {
           date: "2026-01-25",
           weekday: "Sonntag",
-          focus: "PR1 Finale",
+          focus: "PR1: Ruhe",
           tags: ["pr1"],
           tasks: [
             {
-              txt: "PR1: Syntax-Regeln wiederholen (Semikolons!)",
+              txt: "PR1: Leichtes Review, keine Panik",
               subj: "pr1",
             },
-            { txt: "PR1: Leichtes Üben, gut schlafen", subj: "pr1" },
+            {
+              txt: "Gut schlafen (Letzte Klausur!)",
+              subj: "pr1",
+            },
           ],
         },
         {
@@ -833,11 +976,17 @@
           weekday: "Montag",
           isExam: true,
           examId: "pr1_exam",
-          focus: "PR1 FINALE",
+          focus: "PR1 KLAUSUR",
           tags: ["pr1"],
           tasks: [
-            { txt: "PR1 Klausur schreiben (08:00 Uhr)", subj: "pr1" },
-            { txt: "FREIHEIT GENIESSEN", subj: "pr1" },
+            {
+              txt: "08:00 PR1 Klausur (Letzter Versuch - Du schaffst das!)",
+              subj: "pr1",
+            },
+            {
+              txt: "FREIHEIT & FERIEN",
+              subj: "pr1",
+            },
           ],
         },
       ];
