@@ -120,6 +120,88 @@
             transition: width 0.5s ease;
         }
 
+        /* --- HIGH SYSTEM LIVE DASHBOARD --- */
+        .live-system-panel {
+            background: linear-gradient(145deg, #18181b, #09090b);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.1);
+        }
+        .live-status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .live-dot {
+            width: 12px;
+            height: 12px;
+            background-color: var(--danger);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--danger);
+            animation: pulse 2s infinite;
+        }
+        .live-dot.idle {
+            background-color: #555;
+            box-shadow: none;
+            animation: none;
+        }
+        .system-clock {
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+        .up-next-container {
+            background: rgba(249, 115, 22, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .up-next-kicker { font-size: 0.8rem; color: var(--primary); text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .up-next-title { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 10px; }
+        .up-next-meta { display: flex; gap: 15px; font-size: 0.95rem; color: #ddd; }
+        .day-preview-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .day-preview-item {
+            display: flex;
+            background: rgba(255,255,255,0.03);
+            padding: 10px;
+            border-radius: 6px;
+            align-items: center;
+            border-left: 2px solid #333;
+        }
+        .day-preview-item.active {
+            border-left-color: var(--primary);
+            background: rgba(249, 115, 22, 0.05);
+        }
+        .preview-time { width: 120px; color: var(--primary); font-family: monospace; font-size: 0.95rem; }
+        .preview-info { flex: 1; display: flex; flex-direction: column; }
+        .preview-name { font-weight: bold; font-size: 0.95rem; }
+        .preview-room { font-size: 0.8rem; color: var(--text-muted); }
+        .preview-empty { color: var(--text-muted); font-style: italic; padding: 10px; text-align: center; }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
         /* --- SECTION TITLES --- */
         .section-title {
             color: var(--primary);
@@ -396,6 +478,30 @@
         </div>
     </div>
 
+    <div class="live-system-panel">
+        <div class="live-status-header">
+            <div class="status-indicator">
+                <div class="live-dot idle" id="live-indicator-dot"></div>
+                <span id="live-status-text">System Booting...</span>
+            </div>
+            <div class="system-clock" id="system-clock">--:--:--</div>
+        </div>
+        
+        <div class="up-next-container" id="up-next-box" style="display: none;">
+            <div class="up-next-kicker" id="up-next-kicker">Warte auf Synchronisation...</div>
+            <div class="up-next-title" id="up-next-title">Lade Daten</div>
+            <div class="up-next-meta" id="up-next-meta">
+                </div>
+        </div>
+
+        <div class="day-preview-header" style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 10px;" id="day-preview-header">
+            Fahrplan wird berechnet...
+        </div>
+        <div class="day-preview-list" id="day-preview-list">
+            <div class="preview-empty">Synchronisiere mit Systemzeit...</div>
+        </div>
+    </div>
+
     <h2 class="section-title"><i class="fa-regular fa-calendar-days"></i> Stundenplan</h2>
     <div class="schedule-grid" id="schedule-container">
         </div>
@@ -407,8 +513,9 @@
 </div>
 
 <script>
-    /* * --- MASTER KONFIGURATION: STUNDENPLAN --- 
-     * Hier kannst du alle Zeiten und Räume jederzeit anpassen oder löschen.
+/* * --- MASTER KONFIGURATION: STUNDENPLAN --- 
+     * Maschinenlesbares Format für das Live-System.
+     * Tag: 1=Mo, 2=Di, 3=Mi, 4=Do, 5=Fr
      */
     const SCHEDULE_DB = [
         {
@@ -417,35 +524,35 @@
                 {
                     name: "Statistik (Ahlers)",
                     events: [
-                        { type: "VL", time: "Mo 08:15 - 09:45", room: "1A.102" },
-                        { type: "UE", time: "Mo 14:15 - 15:45", room: "1H.207" },
-                        { type: "UE", time: "Mo 16:00 - 17:30", room: "1H.207" },
-                        { type: "UE", time: "Fr 12:30 - 14:00", room: "1H.021" },
-                        { type: "UE", time: "Fr 16:00 - 17:30", room: "1H.019" }
+                        { type: "VL", day: 1, start: "08:15", end: "09:45", room: "1A.102" },
+                        { type: "UE", day: 1, start: "14:15", end: "15:45", room: "1H.207" },
+                        { type: "UE", day: 1, start: "16:00", end: "17:30", room: "1H.207" },
+                        { type: "UE", day: 5, start: "12:30", end: "14:00", room: "1H.021" },
+                        { type: "UE", day: 5, start: "16:00", end: "17:30", room: "1H.019" }
                     ]
                 },
                 {
                     name: "Programmieren 2 (Garmann)",
                     events: [
-                        { type: "VL", time: "Di 08:15 - 09:45", room: "1A.102" },
-                        { type: "TUT", time: "Di 12:30 - 14:00", room: "1H.246" },
-                        { type: "H-UE", time: "Di 14:15 - 15:45", room: "1H.018" },
-                        { type: "UE", time: "Mi 10:15 - 11:45", room: "1H.246" },
-                        { type: "UE", time: "Mi 12:30 - 14:00", room: "1H.246" },
-                        { type: "UE", time: "Do 10:15 - 11:45", room: "1H.246" },
-                        { type: "UE", time: "Do 16:00 - 17:30", room: "1H.246" }
+                        { type: "VL", day: 2, start: "08:15", end: "09:45", room: "1A.102" },
+                        { type: "TUT", day: 2, start: "12:30", end: "14:00", room: "1H.246" },
+                        { type: "H-UE", day: 2, start: "14:15", end: "15:45", room: "1H.018" },
+                        { type: "UE", day: 3, start: "10:15", end: "11:45", room: "1H.246" },
+                        { type: "UE", day: 3, start: "12:30", end: "14:00", room: "1H.246" },
+                        { type: "UE", day: 4, start: "10:15", end: "11:45", room: "1H.246" },
+                        { type: "UE", day: 4, start: "16:00", end: "17:30", room: "1H.246" }
                     ]
                 },
                 {
                     name: "Algorithmen & Datenstr. (Ginkel)",
                     events: [
-                        { type: "VL", time: "Do 08:15 - 09:45", room: "1A.102" },
-                        { type: "UE", time: "Mi 10:15 - 11:45", room: "1H.019" },
-                        { type: "UE", time: "Do 10:15 - 11:45", room: "1H.207" },
-                        { type: "UE", time: "Do 12:30 - 14:00", room: "1H.207" },
-                        { type: "UE", time: "Fr 14:15 - 15:45", room: "1H.019" },
-                        { type: "Z-UE", time: "Mi 16:00 - 17:30", room: "Moodle" },
-                        { type: "Z-UE", time: "Do 16:00 - 17:30", room: "Moodle" }
+                        { type: "VL", day: 4, start: "08:15", end: "09:45", room: "1A.102" },
+                        { type: "UE", day: 3, start: "10:15", end: "11:45", room: "1H.019" },
+                        { type: "UE", day: 4, start: "10:15", end: "11:45", room: "1H.207" },
+                        { type: "UE", day: 4, start: "12:30", end: "14:00", room: "1H.207" },
+                        { type: "UE", day: 5, start: "14:15", end: "15:45", room: "1H.019" },
+                        { type: "Z-UE", day: 3, start: "16:00", end: "17:30", room: "Moodle" },
+                        { type: "Z-UE", day: 4, start: "16:00", end: "17:30", room: "Moodle" }
                     ]
                 }
             ]
@@ -456,48 +563,48 @@
                 {
                     name: "Webtechnologien (Grönniger)",
                     events: [
-                        { type: "VL", time: "Mo 10:15 - 11:45", room: "1A.102" },
-                        { type: "UE", time: "Mo 12:30 - 14:00", room: "1H.246" },
-                        { type: "UE", time: "Do 10:15 - 11:45", room: "1H.238" },
-                        { type: "UE", time: "Fr 08:15 - 09:45", room: "1H.238" },
-                        { type: "UE", time: "Fr 10:15 - 11:45", room: "1H.238" }
+                        { type: "VL", day: 1, start: "10:15", end: "11:45", room: "1A.102" },
+                        { type: "UE", day: 1, start: "12:30", end: "14:00", room: "1H.246" },
+                        { type: "UE", day: 4, start: "10:15", end: "11:45", room: "1H.238" },
+                        { type: "UE", day: 5, start: "08:15", end: "09:45", room: "1H.238" },
+                        { type: "UE", day: 5, start: "10:15", end: "11:45", room: "1H.238" }
                     ]
                 },
                 {
                     name: "Betriebssys. & Netze II (Wohlfeil)",
                     events: [
-                        { type: "VL", time: "Di 10:15 - 11:45", room: "1H.018" },
-                        { type: "UE", time: "Di 12:30 - 14:00", room: "1H.246" },
-                        { type: "UE", time: "Di 14:15 - 15:45", room: "1H.238" },
-                        { type: "UE", time: "Di 16:00 - 17:30", room: "1H.238" },
-                        { type: "UE", time: "Mi 14:15 - 15:45", room: "1H.238" }
+                        { type: "VL", day: 2, start: "10:15", end: "11:45", room: "1H.018" },
+                        { type: "UE", day: 2, start: "12:30", end: "14:00", room: "1H.246" },
+                        { type: "UE", day: 2, start: "14:15", end: "15:45", room: "1H.238" },
+                        { type: "UE", day: 2, start: "16:00", end: "17:30", room: "1H.238" },
+                        { type: "UE", day: 3, start: "14:15", end: "15:45", room: "1H.238" }
                     ]
                 },
                 {
                     name: "Software-Engineering I (Bruns)",
                     events: [
-                        { type: "VL", time: "Mi 10:15 - 11:45", room: "1H.018" },
-                        { type: "UE", time: "Mi 16:00 - 17:30", room: "1H.238" },
-                        { type: "UE", time: "Do 14:15 - 15:45", room: "1H.238" },
-                        { type: "UE", time: "Do 16:00 - 17:30", room: "1H.238" },
-                        { type: "UE", time: "Fr 17:30 - 19:00", room: "1H.238" }
+                        { type: "VL", day: 3, start: "10:15", end: "11:45", room: "1H.018" },
+                        { type: "UE", day: 3, start: "16:00", end: "17:30", room: "1H.238" },
+                        { type: "UE", day: 4, start: "14:15", end: "15:45", room: "1H.238" },
+                        { type: "UE", day: 4, start: "16:00", end: "17:30", room: "1H.238" },
+                        { type: "UE", day: 5, start: "17:30", end: "19:00", room: "1H.238" }
                     ]
                 },
                 {
                     name: "Computer-Grafik 1 (Allerkamp)",
                     events: [
-                        { type: "VL", time: "Mo 14:15 - 15:45", room: "1A.102" },
-                        { type: "UE", time: "Mo 16:00 - 17:30", room: "1H.236" },
-                        { type: "UE", time: "Mi 12:30 - 14:00", room: "1H.236" },
-                        { type: "UE", time: "Do 12:30 - 14:00", room: "1H.236" },
-                        { type: "UE", time: "Fr 12:30 - 14:00", room: "1H.236" }
+                        { type: "VL", day: 1, start: "14:15", end: "15:45", room: "1A.102" },
+                        { type: "UE", day: 1, start: "16:00", end: "17:30", room: "1H.236" },
+                        { type: "UE", day: 3, start: "12:30", end: "14:00", room: "1H.236" },
+                        { type: "UE", day: 4, start: "12:30", end: "14:00", room: "1H.236" },
+                        { type: "UE", day: 5, start: "12:30", end: "14:00", room: "1H.236" }
                     ]
                 },
                 {
                     name: "Ergänzende Fächer",
                     events: [
-                        { type: "Block", time: "Do 12:30 - 19:00", room: "s. Hinweise" },
-                        { type: "Block", time: "Fr 12:30 - 19:00", room: "s. Hinweise" }
+                        { type: "Block", day: 4, start: "12:30", end: "19:00", room: "s. Hinweise" },
+                        { type: "Block", day: 5, start: "12:30", end: "19:00", room: "s. Hinweise" }
                     ]
                 }
             ]
@@ -574,11 +681,15 @@
 
     // --- LOGIK ---
 
-    function init() {
-        renderSchedule(); // Render den neuen Stundenplan
+function init() {
+        renderSchedule(); 
         renderGrid();
         loadState();
         calculateStats();
+        
+        // NEU: Live System direkt 1x ausführen und dann jede Sekunde (1000ms) updaten
+        updateLiveSystem();
+        setInterval(updateLiveSystem, 1000);
     }
 
     // NEU: Stundenplan rendern
@@ -768,6 +879,159 @@ function applyConfig() {
         document.getElementById('display-gpa').innerText = gpa;
         calculateStats(); 
         alert("Konfiguration fest gespeichert, Bro!");
+    }
+
+
+    // --- HIGH SYSTEM ENGINE: ECHTZEIT-BERECHNUNG ---
+    
+    // Hilfsfunktion: Wandelt "08:15" in 495 Minuten um (für saubere Mathematik)
+    function getMinutes(timeStr) {
+        if(!timeStr) return 0;
+        const parts = timeStr.split(':');
+        return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    }
+
+    function updateLiveSystem() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        // 1. Systemuhr ticken lassen
+        document.getElementById('system-clock').innerText = `${hours}:${minutes}:${seconds}`;
+        
+        const currentMins = now.getHours() * 60 + now.getMinutes();
+        let currentDay = now.getDay(); 
+        if (currentDay === 0) currentDay = 7; // So=7, Mo=1, Di=2...
+
+        // 2. Alle Termine aus der Datenbank flachklopfen und einlesen
+        let allEvents = [];
+        SCHEDULE_DB.forEach(sem => {
+            sem.modules.forEach(mod => {
+                mod.events.forEach(ev => {
+                    if(ev.day) {
+                        allEvents.push({
+                            moduleName: mod.name,
+                            type: ev.type,
+                            day: ev.day,
+                            start: ev.start,
+                            end: ev.end,
+                            room: ev.room,
+                            startMins: getMinutes(ev.start),
+                            endMins: getMinutes(ev.end)
+                        });
+                    }
+                });
+            });
+        });
+
+        // 3. Smart-Filter: Welcher Tag ist relevant?
+        let targetDay = currentDay;
+        let todaysEvents = allEvents.filter(e => e.day === targetDay);
+        
+        // Checken: Ist heute schon alles vorbei oder haben wir Wochenende?
+        let isTodayDone = todaysEvents.length === 0 || todaysEvents.every(e => e.endMins <= currentMins);
+        let isShowingTomorrow = false;
+
+        // Wenn heute durch ist, scannen wir automatisch den nächsten Tag mit Terminen
+        if (isTodayDone) {
+            targetDay++;
+            if(targetDay > 7) targetDay = 1;
+            
+            for(let i=0; i<7; i++) {
+                let checkEvents = allEvents.filter(e => e.day === targetDay);
+                if(checkEvents.length > 0) {
+                    isShowingTomorrow = true;
+                    break;
+                }
+                targetDay++;
+                if(targetDay > 7) targetDay = 1;
+            }
+        }
+
+        // Termine für den Ziel-Tag chronologisch sortieren
+        let displayEvents = allEvents.filter(e => e.day === targetDay).sort((a,b) => a.startMins - b.startMins);
+        
+        // 4. Status berechnen: Was läuft JETZT? Was kommt ALS NÄCHSTES?
+        let activeEvent = null;
+        let nextEvent = null;
+
+        if (!isShowingTomorrow) {
+            for (let ev of displayEvents) {
+                if (ev.startMins <= currentMins && ev.endMins > currentMins) {
+                    activeEvent = ev;
+                } else if (ev.startMins > currentMins && !nextEvent) {
+                    nextEvent = ev;
+                }
+            }
+        } else {
+            // Wenn wir schon morgen anzeigen, ist das allererste Event das "nächste"
+            nextEvent = displayEvents[0];
+        }
+
+        // --- 5. DISPLAY UPDATES (HTML manipulieren) ---
+        const dot = document.getElementById('live-indicator-dot');
+        const statusText = document.getElementById('live-status-text');
+        const upNextBox = document.getElementById('up-next-box');
+        const upNextKicker = document.getElementById('up-next-kicker');
+        const upNextTitle = document.getElementById('up-next-title');
+        const upNextMeta = document.getElementById('up-next-meta');
+        const previewHeader = document.getElementById('day-preview-header');
+        const previewList = document.getElementById('day-preview-list');
+
+        // Top Status Leiste
+        if (activeEvent) {
+            dot.classList.remove('idle');
+            statusText.innerText = "LIVE: " + activeEvent.moduleName;
+        } else {
+            dot.classList.add('idle');
+            statusText.innerText = "SYSTEM STANDBY";
+        }
+
+        // Fokus-Box (Jetzt oder Nächstes)
+        upNextBox.style.display = 'block';
+        if (activeEvent) {
+            upNextKicker.innerText = "JETZT GERADE LÄUFT";
+            upNextTitle.innerText = activeEvent.moduleName;
+            upNextMeta.innerHTML = `<span><i class="fa-regular fa-clock"></i> ${activeEvent.start} - ${activeEvent.end}</span>
+                                    <span><i class="fa-solid fa-location-dot"></i> ${activeEvent.room} <span style="background:var(--primary);color:#000;padding:2px 5px;border-radius:4px;font-size:0.8em;margin-left:5px;">${activeEvent.type}</span></span>`;
+        } else if (nextEvent) {
+            upNextKicker.innerText = isShowingTomorrow ? "NÄCHSTER VORLESUNGSTAG STARTET MIT" : "ALS NÄCHSTES";
+            upNextTitle.innerText = nextEvent.moduleName;
+            upNextMeta.innerHTML = `<span><i class="fa-regular fa-clock"></i> ${nextEvent.start} - ${nextEvent.end}</span>
+                                    <span><i class="fa-solid fa-location-dot"></i> ${nextEvent.room} <span style="background:var(--primary);color:#000;padding:2px 5px;border-radius:4px;font-size:0.8em;margin-left:5px;">${nextEvent.type}</span></span>`;
+        } else {
+            upNextBox.style.display = 'none'; 
+        }
+
+        // Restliche Liste für den Tag rendern
+        const dayNames = ["", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
+        if (isShowingTomorrow) {
+            previewHeader.innerText = "Fahrplan für " + dayNames[targetDay] + ":";
+        } else {
+            previewHeader.innerText = "Dein restlicher Tag:";
+        }
+
+        previewList.innerHTML = '';
+        displayEvents.forEach(ev => {
+            let isActive = activeEvent && activeEvent === ev;
+            // Nur Events zeigen, die noch nicht vorbei sind (außer wir gucken schon auf morgen, dann alle zeigen)
+            if (isShowingTomorrow || ev.endMins > currentMins) {
+                previewList.innerHTML += `
+                    <div class="day-preview-item ${isActive ? 'active' : ''}">
+                        <div class="preview-time">${ev.start} - ${ev.end}</div>
+                        <div class="preview-info">
+                            <span class="preview-name">${ev.moduleName} <span class="event-type" style="font-size:0.65rem; padding:2px 5px; margin-left:5px;">${ev.type}</span></span>
+                            <span class="preview-room">Raum: ${ev.room}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        if(previewList.innerHTML === '') {
+             previewList.innerHTML = '<div class="preview-empty">Alle Vorlesungen für heute sind geschafft! Gönn dir was!</div>';
+        }
     }
     init();
 
