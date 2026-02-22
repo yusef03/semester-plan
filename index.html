@@ -120,7 +120,125 @@
             transition: width 0.5s ease;
         }
 
-        /* --- SEMESTER GRID --- */
+        /* --- SECTION TITLES --- */
+        .section-title {
+            color: var(--primary);
+            margin: 40px 0 20px 0;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        /* --- SCHEDULE SECTION (NEU) --- */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .schedule-semester-col {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .schedule-sem-title {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        details.schedule-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        details.schedule-box:hover {
+            border-color: #444;
+        }
+
+        details.schedule-box summary {
+            padding: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            background: rgba(255,255,255,0.02);
+            list-style: none; /* remove default arrow */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        
+        details.schedule-box summary::-webkit-details-marker { display: none; }
+        
+        details.schedule-box summary::after {
+            content: '\f078'; /* FontAwesome chevron-down */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            transition: transform 0.3s;
+            color: var(--text-muted);
+        }
+        
+        details.schedule-box[open] summary::after {
+            transform: rotate(180deg);
+            color: var(--primary);
+        }
+
+        .schedule-content {
+            padding: 10px;
+            background: var(--bg-dark);
+            border-top: 1px solid var(--border);
+        }
+
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .event-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .event-type { 
+            font-weight: bold; 
+            color: var(--primary); 
+            font-size: 0.85rem; 
+            width: 45px; 
+            background: rgba(249, 115, 22, 0.1);
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .event-time { 
+            flex: 1; 
+            margin-left: 15px; 
+            font-size: 0.95rem; 
+        }
+        
+        .event-room { 
+            color: var(--text-muted); 
+            font-size: 0.85rem; 
+            text-align: right;
+            background: #000;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        /* --- SEMESTER GRID (MODULÜBERSICHT) --- */
         .semester-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -278,17 +396,117 @@
         </div>
     </div>
 
+    <h2 class="section-title"><i class="fa-regular fa-calendar-days"></i> Stundenplan</h2>
+    <div class="schedule-grid" id="schedule-container">
+        </div>
+
+    <h2 class="section-title"><i class="fa-solid fa-list-check"></i> Modul-Übersicht</h2>
     <div class="semester-grid" id="module-grid">
         </div>
 
 </div>
 
 <script>
-    /* * --- MASTER KONFIGURATION --- 
-     * Hier sind alle Module und Credits definiert.
-     * Du kannst die Zahl bei "ects" ändern, wenn du willst.
+    /* * --- MASTER KONFIGURATION: STUNDENPLAN --- 
+     * Hier kannst du alle Zeiten und Räume jederzeit anpassen oder löschen.
      */
-    
+    const SCHEDULE_DB = [
+        {
+            semester: "2. Semester",
+            modules: [
+                {
+                    name: "Statistik (Ahlers)",
+                    events: [
+                        { type: "VL", time: "Mo 08:15 - 09:45", room: "1A.102" },
+                        { type: "UE", time: "Mo 14:15 - 15:45", room: "1H.207" },
+                        { type: "UE", time: "Mo 16:00 - 17:30", room: "1H.207" },
+                        { type: "UE", time: "Fr 12:30 - 14:00", room: "1H.021" },
+                        { type: "UE", time: "Fr 16:00 - 17:30", room: "1H.019" }
+                    ]
+                },
+                {
+                    name: "Programmieren 2 (Garmann)",
+                    events: [
+                        { type: "VL", time: "Di 08:15 - 09:45", room: "1A.102" },
+                        { type: "TUT", time: "Di 12:30 - 14:00", room: "1H.246" },
+                        { type: "H-UE", time: "Di 14:15 - 15:45", room: "1H.018" },
+                        { type: "UE", time: "Mi 10:15 - 11:45", room: "1H.246" },
+                        { type: "UE", time: "Mi 12:30 - 14:00", room: "1H.246" },
+                        { type: "UE", time: "Do 10:15 - 11:45", room: "1H.246" },
+                        { type: "UE", time: "Do 16:00 - 17:30", room: "1H.246" }
+                    ]
+                },
+                {
+                    name: "Algorithmen & Datenstr. (Ginkel)",
+                    events: [
+                        { type: "VL", time: "Do 08:15 - 09:45", room: "1A.102" },
+                        { type: "UE", time: "Mi 10:15 - 11:45", room: "1H.019" },
+                        { type: "UE", time: "Do 10:15 - 11:45", room: "1H.207" },
+                        { type: "UE", time: "Do 12:30 - 14:00", room: "1H.207" },
+                        { type: "UE", time: "Fr 14:15 - 15:45", room: "1H.019" },
+                        { type: "Z-UE", time: "Mi 16:00 - 17:30", room: "Moodle" },
+                        { type: "Z-UE", time: "Do 16:00 - 17:30", room: "Moodle" }
+                    ]
+                }
+            ]
+        },
+        {
+            semester: "4. Semester",
+            modules: [
+                {
+                    name: "Webtechnologien (Grönniger)",
+                    events: [
+                        { type: "VL", time: "Mo 10:15 - 11:45", room: "1A.102" },
+                        { type: "UE", time: "Mo 12:30 - 14:00", room: "1H.246" },
+                        { type: "UE", time: "Do 10:15 - 11:45", room: "1H.238" },
+                        { type: "UE", time: "Fr 08:15 - 09:45", room: "1H.238" },
+                        { type: "UE", time: "Fr 10:15 - 11:45", room: "1H.238" }
+                    ]
+                },
+                {
+                    name: "Betriebssys. & Netze II (Wohlfeil)",
+                    events: [
+                        { type: "VL", time: "Di 10:15 - 11:45", room: "1H.018" },
+                        { type: "UE", time: "Di 12:30 - 14:00", room: "1H.246" },
+                        { type: "UE", time: "Di 14:15 - 15:45", room: "1H.238" },
+                        { type: "UE", time: "Di 16:00 - 17:30", room: "1H.238" },
+                        { type: "UE", time: "Mi 14:15 - 15:45", room: "1H.238" }
+                    ]
+                },
+                {
+                    name: "Software-Engineering I (Bruns)",
+                    events: [
+                        { type: "VL", time: "Mi 10:15 - 11:45", room: "1H.018" },
+                        { type: "UE", time: "Mi 16:00 - 17:30", room: "1H.238" },
+                        { type: "UE", time: "Do 14:15 - 15:45", room: "1H.238" },
+                        { type: "UE", time: "Do 16:00 - 17:30", room: "1H.238" },
+                        { type: "UE", time: "Fr 17:30 - 19:00", room: "1H.238" }
+                    ]
+                },
+                {
+                    name: "Computer-Grafik 1 (Allerkamp)",
+                    events: [
+                        { type: "VL", time: "Mo 14:15 - 15:45", room: "1A.102" },
+                        { type: "UE", time: "Mo 16:00 - 17:30", room: "1H.236" },
+                        { type: "UE", time: "Mi 12:30 - 14:00", room: "1H.236" },
+                        { type: "UE", time: "Do 12:30 - 14:00", room: "1H.236" },
+                        { type: "UE", time: "Fr 12:30 - 14:00", room: "1H.236" }
+                    ]
+                },
+                {
+                    name: "Ergänzende Fächer",
+                    events: [
+                        { type: "Block", time: "Do 12:30 - 19:00", room: "s. Hinweise" },
+                        { type: "Block", time: "Fr 12:30 - 19:00", room: "s. Hinweise" }
+                    ]
+                }
+            ]
+        }
+    ];
+
+    /* * --- MASTER KONFIGURATION: MODULE --- 
+     * Hier sind alle Module und Credits definiert.
+     */
     const DB = [
         {
             sem: 1,
@@ -357,9 +575,46 @@
     // --- LOGIK ---
 
     function init() {
+        renderSchedule(); // Render den neuen Stundenplan
         renderGrid();
-        loadState(); // Lädt gespeicherte Haken
+        loadState();
         calculateStats();
+    }
+
+    // NEU: Stundenplan rendern
+    function renderSchedule() {
+        const container = document.getElementById('schedule-container');
+        let html = '';
+
+        SCHEDULE_DB.forEach(sem => {
+            html += `<div class="schedule-semester-col">
+                        <div class="schedule-sem-title">${sem.semester}</div>`;
+            
+            sem.modules.forEach(mod => {
+                let eventsHtml = '';
+                mod.events.forEach(ev => {
+                    eventsHtml += `
+                        <div class="event-item">
+                            <span class="event-type">${ev.type}</span>
+                            <span class="event-time">${ev.time}</span>
+                            <span class="event-room">${ev.room}</span>
+                        </div>
+                    `;
+                });
+
+                html += `
+                    <details class="schedule-box">
+                        <summary>${mod.name}</summary>
+                        <div class="schedule-content">
+                            ${eventsHtml}
+                        </div>
+                    </details>
+                `;
+            });
+            html += `</div>`;
+        });
+
+        container.innerHTML = html;
     }
 
     function renderGrid() {
@@ -370,7 +625,6 @@
             const box = document.createElement('div');
             box.className = 'semester-box';
             
-            // Berechne ECTS für dieses Semester
             const semTotal = semester.modules.reduce((acc, m) => acc + m.ects, 0);
 
             let html = `
@@ -419,7 +673,6 @@
     function toggleModule(id, ects) {
         const card = document.getElementById('card_' + id);
         
-        // Toggle Klasse
         if (card.classList.contains('passed')) {
             card.classList.remove('passed');
             localStorage.setItem(id, 'false');
@@ -428,12 +681,33 @@
             localStorage.setItem(id, 'true');
         }
         
-        // Recalculate
         calculateStats();
     }
 
-    function loadState() {
-        // Zuerst die "Hardcoded" Passed Sachen aus der DB (sicher ist sicher)
+function loadState() {
+        // --- NEUER TEIL: Werte aus dem Gedächtnis abrufen ---
+        const savedGpa = localStorage.getItem('saved_gpa');
+        const savedTotal = localStorage.getItem('saved_total');
+        const savedSem = localStorage.getItem('saved_sem');
+        const savedTarget = localStorage.getItem('saved_target');
+
+        // Wenn ein Wert gespeichert wurde, trage ihn in die Felder und die Anzeige ein
+        if (savedGpa) {
+            document.getElementById('cfg-gpa').value = savedGpa;
+            document.getElementById('display-gpa').innerText = savedGpa;
+        }
+        if (savedTotal) {
+            document.getElementById('cfg-total').value = savedTotal;
+        }
+        if (savedSem) {
+            document.getElementById('cfg-sem').value = savedSem;
+        }
+        if (savedTarget) {
+            document.getElementById('cfg-target').value = savedTarget;
+        }
+        // ----------------------------------------------------
+
+        // --- ALTER TEIL: Haken für bestandene Module laden ---
         DB.forEach(sem => {
             sem.modules.forEach(mod => {
                 if(mod.status === 'passed') {
@@ -442,7 +716,6 @@
             });
         });
 
-        // Jetzt DOM updaten
         const allModules = document.querySelectorAll('.module-item');
         allModules.forEach(item => {
             const id = item.id.replace('card_', '');
@@ -458,7 +731,6 @@
         let currentECTS = 0;
         const totalECTS = parseInt(document.getElementById('cfg-total').value);
 
-        // Zähle alle Module, die die Klasse "passed" haben
         DB.forEach(sem => {
             sem.modules.forEach(mod => {
                 const card = document.getElementById('card_' + mod.id);
@@ -468,28 +740,35 @@
             });
         });
 
-        // Update UI
         document.getElementById('display-ects').innerText = `${currentECTS} / ${totalECTS}`;
         document.getElementById('display-left').innerText = totalECTS - currentECTS;
         
         const percent = Math.round((currentECTS / totalECTS) * 100);
         document.getElementById('progress-bar').style.width = percent + '%';
         
-        // Farbe ändern je nach Fortschritt
         if(percent < 30) document.getElementById('progress-bar').style.background = 'var(--danger)';
         else if(percent < 70) document.getElementById('progress-bar').style.background = 'var(--primary)';
         else document.getElementById('progress-bar').style.background = 'var(--success)';
     }
 
-    function applyConfig() {
-        // Updated nur die Anzeige des Durchschnitts und Total, falls User oben was ändert
+function applyConfig() {
+        // 1. Alle Werte aus deinen Eingabefeldern holen
         const gpa = document.getElementById('cfg-gpa').value;
-        document.getElementById('display-gpa').innerText = gpa;
-        calculateStats(); // Recalculate falls Total geändert wurde
-        alert("Konfiguration gespeichert!");
-    }
+        const total = document.getElementById('cfg-total').value;
+        const sem = document.getElementById('cfg-sem').value;
+        const target = document.getElementById('cfg-target').value;
 
-    // Start
+        // 2. NEU: Diese Werte fest im Browser abspeichern
+        localStorage.setItem('saved_gpa', gpa);
+        localStorage.setItem('saved_total', total);
+        localStorage.setItem('saved_sem', sem);
+        localStorage.setItem('saved_target', target);
+
+        // 3. Anzeige oben aktualisieren
+        document.getElementById('display-gpa').innerText = gpa;
+        calculateStats(); 
+        alert("Konfiguration fest gespeichert, Bro!");
+    }
     init();
 
 </script>
