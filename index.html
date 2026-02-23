@@ -692,10 +692,13 @@ function init() {
         setInterval(updateLiveSystem, 1000);
     }
 
-    // NEU: Stundenplan rendern
+// NEU: Stundenplan rendern (aktualisiert für das smarte Datenformat)
     function renderSchedule() {
         const container = document.getElementById('schedule-container');
         let html = '';
+        
+        // Hilfs-Liste, um die Zahlen wieder in Text für die Anzeige umzuwandeln
+        const dayNamesShort = ["", "Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]; 
 
         SCHEDULE_DB.forEach(sem => {
             html += `<div class="schedule-semester-col">
@@ -704,10 +707,13 @@ function init() {
             sem.modules.forEach(mod => {
                 let eventsHtml = '';
                 mod.events.forEach(ev => {
+                    // Hier basteln wir Tag, Start und Ende wieder zu einem schönen Text zusammen
+                    let timeText = `${dayNamesShort[ev.day]} ${ev.start} - ${ev.end}`;
+                    
                     eventsHtml += `
                         <div class="event-item">
                             <span class="event-type">${ev.type}</span>
-                            <span class="event-time">${ev.time}</span>
+                            <span class="event-time">${timeText}</span>
                             <span class="event-room">${ev.room}</span>
                         </div>
                     `;
