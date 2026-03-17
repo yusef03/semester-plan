@@ -336,6 +336,74 @@ function renderSchedule() {
     upcomingContainer.innerHTML = upcomingHtml;
 }
 
+function renderWeeklySchedule() {
+    const container = document.getElementById('weekly-schedule-container');
+    if (!container) return;
+
+    const days = [
+        { id: 1, name: "Montag" },
+        { id: 2, name: "Dienstag" },
+        { id: 3, name: "Mittwoch" },
+        { id: 4, name: "Donnerstag" },
+        { id: 5, name: "Freitag" }
+    ];
+
+    let allWeeklyEvents = [];
+    SCHEDULE_DB.forEach(sem => {
+        sem.modules.forEach(mod => {
+            mod.events.forEach(ev => {
+                allWeeklyEvents.push({
+                    moduleName: mod.name,
+                    type: ev.type,
+                    day: ev.day,
+                    start: ev.start,
+                    end: ev.end,
+                    room: ev.room,
+                    startMins: getMinutes(ev.start) 
+                });
+            });
+        });
+    });
+
+    let html = '';
+    days.forEach(dayObj => {
+        let dayEvents = allWeeklyEvents
+            .filter(e => e.day === dayObj.id)
+            .sort((a, b) => a.startMins - b.startMins);
+
+html += `
+            <div class="weekly-day-card">
+                <div style="background: rgba(255,255,255,0.03); padding: 12px; text-align: center; font-weight: bold; border-bottom: 1px solid var(--border); color: var(--primary); letter-spacing: 1px; text-transform: uppercase; font-size: 0.85rem;">
+                    ${dayObj.name}
+                </div>
+                <div style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+        `;
+
+        if (dayEvents.length === 0) {
+            html += `<div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0; font-style: italic;">Keine Vorlesungen 🎉</div>`;
+        } else {
+            dayEvents.forEach(ev => {
+                html += `
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+                        <div style="color: var(--primary); font-weight: bold; font-size: 0.85rem; margin-bottom: 6px;">
+                            <i class="fa-regular fa-clock"></i> ${ev.start} - ${ev.end}
+                        </div>
+                        <div style="color: #fff; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; line-height: 1.3;">
+                            ${ev.moduleName}
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; color: var(--text-muted);">
+                            <span><i class="fa-solid fa-location-dot"></i> ${ev.room}</span>
+                            <span style="background: rgba(255,255,255,0.1); padding: 3px 6px; border-radius: 4px; font-weight: bold;">${ev.type}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        html += `</div></div>`;
+    });
+    container.innerHTML = html;
+}
+
 function renderGrid() {
     const grid = document.getElementById('module-grid');
     if (!grid) return;
@@ -1051,7 +1119,8 @@ function deleteUserEvent(id) {
 
 function init() {
     // Diese Funktionen bauen das Interface beim Start auf
-    renderSchedule(); 
+    renderSchedule();
+    renderWeeklySchedule();
     renderGrid();
     renderStudyPlan();
     calculateStats();
