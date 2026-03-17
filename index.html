@@ -137,7 +137,7 @@
     </div>
 
 <div id="tab-focus" class="tab-content">
-        <h2 class="section-title"><i class="fa-solid fa-list-check"></i> Mission Hub</h2>
+        <h2 class="section-title"><i class="fa-solid fa-list-check"></i> Termine</h2>
         
         <div style="background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 25px; margin-bottom: 30px; box-shadow: var(--shadow-soft);">
             <h3 style="margin: 0 0 15px 0; font-size: 1.1rem; color: var(--text-main);">Neues Ereignis erfassen</h3>
@@ -151,7 +151,7 @@
 
                 <input type="text" id="event-title" placeholder="Titel (z.B. Projekt-Präsentation)" class="config-input" style="width: 100%; padding: 12px; border-radius: var(--radius-md); background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border);">
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="responsive-time-grid">
                     <input type="date" id="event-date" class="config-input" style="width: 100%; padding: 12px; border-radius: var(--radius-md); background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); color-scheme: dark;">
                     <input type="time" id="event-time" class="config-input" style="width: 100%; padding: 12px; border-radius: var(--radius-md); background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); color-scheme: dark;">
                 </div>
@@ -163,7 +163,7 @@
         </div>
 
 <h3 style="margin: 0 0 15px 0; font-size: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
-            <i class="fa-solid fa-gears"></i> Missions-Verwaltung
+            <i class="fa-solid fa-gears"></i> Termin-Verwaltung
         </h3>
         
         <div style="display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px;">
@@ -236,7 +236,7 @@
             <button style="background:none; border:none; color:var(--text-muted); font-size:2rem; cursor:pointer; line-height: 1;" onclick="document.getElementById('routine-modal').style.display='none'">&times;</button>
         </div>
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+        <div class="responsive-time-grid" style="margin-bottom: 20px;">
             <div>
                 <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Startzeit</label>
                 <input type="time" id="routine-time-start" class="config-input" style="width: 100%; padding: 12px; margin-top: 5px; border-radius: var(--radius-md); background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border); color-scheme: dark;">
