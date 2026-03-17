@@ -635,3 +635,269 @@ h1 {
     background: var(--primary-light); 
     transform: translateY(-1px);
 }
+
+/* =========================================================
+   ROUTINE MODAL & SMART PILLS (BOTTOM SHEET)
+   ========================================================= */
+.bottom-sheet-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    display: none; /* Wird per JS auf 'flex' gesetzt */
+    align-items: flex-end; /* Drückt das Menü nach unten */
+    justify-content: center;
+}
+.bottom-sheet {
+    background: var(--bg-panel);
+    width: 100%;
+    max-width: 600px;
+    border-radius: 20px 20px 0 0;
+    padding: 25px;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+    animation: slideUp 0.3s ease-out;
+}
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+.pill-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+.module-pill {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 10px 18px;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+.module-pill.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 4px 10px rgba(232, 93, 4, 0.3);
+}
+.routine-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 15px;
+    transition: transform 0.2s, background 0.2s;
+    cursor: pointer;
+}
+.routine-card:active {
+    transform: scale(0.98);
+}
+.routine-card:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+/* =========================================================
+   SMART TIMELINE DESIGN
+   ========================================================= */
+.timeline-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary); /* Markierung für Wichtigkeit */
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s;
+}
+
+.timeline-card:active {
+    transform: scale(0.98);
+}
+
+.timeline-time-box {
+    text-align: center;
+    min-width: 70px;
+    padding-right: 15px;
+    border-right: 1px solid var(--border);
+}
+
+.timeline-content {
+    flex: 1;
+    padding-left: 15px;
+}
+
+.timeline-title {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.timeline-meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    gap: 10px;
+}
+
+.timeline-badge {
+    font-size: 0.65rem;
+    background: rgba(255,255,255,0.05);
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.type-btn {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.type-btn.active {
+    background: rgba(232, 93, 4, 0.15);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* =========================================================
+   STUDIUM TAB: PROFILE CARD (RESPONSIVE & HIGH-END)
+   ========================================================= */
+.profile-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-glow {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 150px;
+    height: 150px;
+    background: var(--primary);
+    opacity: 0.1;
+    filter: blur(40px);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.profile-header {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+}
+
+.profile-avatar {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.8rem;
+    color: #fff;
+    font-weight: bold;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(232, 93, 4, 0.3);
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    margin: 0 0 5px 0;
+    color: #fff;
+    font-size: 1.4rem;
+}
+
+.profile-course {
+    color: var(--primary-light);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.profile-status-container {
+    text-align: right;
+}
+
+.profile-status-pill {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    display: inline-block;
+}
+
+.profile-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+}
+
+.detail-value {
+    color: var(--text-main);
+    font-size: 0.9rem;
+}
+
+/* SMARTPHONE ANPASSUNG (Hier passiert die Magie) */
+@media (max-width: 550px) {
+    .profile-card {
+        padding: 20px;
+    }
+    .profile-header {
+        flex-direction: column; /* Stapelt Avatar, Name und Status untereinander */
+        text-align: center;
+        gap: 12px;
+    }
+    .profile-status-container {
+        text-align: center;
+        width: 100%;
+        margin-top: 5px;
+    }
+    .profile-details-grid {
+        grid-template-columns: 1fr 1fr; /* Zwingt die Infos auf dem Handy in 2 saubere Spalten */
+        gap: 15px 10px;
+    }
+}
