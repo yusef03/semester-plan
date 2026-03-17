@@ -901,3 +901,52 @@ h1 {
         gap: 15px 10px;
     }
 }
+
+/* =========================================================
+   MOBILE FIXES (NAV, MODALS, GRIDS)
+   ========================================================= */
+
+/* 1. Bottom Nav Fix (Verhindert Abschneiden auf kleinen Displays) */
+.bottom-nav {
+    padding: 5px 2px;
+    box-sizing: border-box;
+}
+.nav-item {
+    padding: 8px 2px;
+    min-width: 0; /* Zwingt das Grid, in der Breite zu bleiben */
+}
+.nav-item span {
+    font-size: 0.6rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+/* 2. Routine Bottom Sheet Fix (Macht das Fenster scrollbar!) */
+.bottom-sheet {
+    max-height: 85vh; /* Fenster darf maximal 85% der Bildschirmhöhe haben */
+    overflow-y: auto; /* Aktiviert die Scrollbar, wenn es zu viele Module sind */
+    box-sizing: border-box;
+    padding-bottom: 40px; /* Puffer für den Speichern-Button */
+}
+
+/* 3. Eingabefelder Fix (Verhindert, dass sie kleben) */
+.config-input {
+    box-sizing: border-box; /* Zieht das Padding nach innen, nicht nach außen */
+    max-width: 100%;
+}
+
+/* 4. Responsive Grid für Datum & Uhrzeit */
+.responsive-time-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+@media (max-width: 450px) {
+    .responsive-time-grid {
+        grid-template-columns: 1fr; /* Stapelt Datum und Uhrzeit auf Handys untereinander */
+        gap: 10px;
+    }
+}
