@@ -906,21 +906,32 @@ h1 {
    MOBILE FIXES (NAV, MODALS, GRIDS)
    ========================================================= */
 
-/* 1. Bottom Nav Fix (Verhindert Abschneiden auf kleinen Displays) */
+/* 1. Bottom Nav Fix (Perfekt zentriert und responsive) */
 .bottom-nav {
     padding: 5px 2px;
     box-sizing: border-box;
+    display: grid;
 }
 .nav-item {
+    display: flex;
+    flex-direction: column; /* Stapelt Icon und Text exakt untereinander */
+    align-items: center;    /* Zentriert horizontal */
+    justify-content: center;/* Zentriert vertikal */
+    text-align: center;
     padding: 8px 2px;
-    min-width: 0; /* Zwingt das Grid, in der Breite zu bleiben */
+    min-width: 0;
+}
+.nav-item i {
+    margin-bottom: 4px; /* Etwas Luft zwischen Icon und Text */
+    font-size: 1.2rem;
 }
 .nav-item span {
-    font-size: 0.6rem !important;
+    font-size: 0.65rem !important;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
+    text-align: center; /* Zwingt den Text in die absolute Mitte */
 }
 
 /* 2. Routine Bottom Sheet Fix (Macht das Fenster scrollbar!) */
@@ -948,5 +959,41 @@ h1 {
     .responsive-time-grid {
         grid-template-columns: 1fr; /* Stapelt Datum und Uhrzeit auf Handys untereinander */
         gap: 10px;
+    }
+}
+
+/* =========================================================
+   STUNDENPLAN (DESKTOP GRID & MOBILE SWIPE)
+   ========================================================= */
+.weekly-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 Spalten für 5 Tage auf dem PC */
+    gap: 15px;
+    align-items: start;
+}
+
+.weekly-day-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Die Magie für das Handy (ab 950px Bildschirmbreite) */
+@media (max-width: 950px) {
+    .weekly-grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 10px;
+        scrollbar-width: none; /* Versteckt Scrollbar in Firefox */
+    }
+    .weekly-grid::-webkit-scrollbar {
+        display: none; /* Versteckt Scrollbar in Chrome/Safari/iOS */
+    }
+    .weekly-day-card {
+        min-width: 260px; /* Perfekte Breite für Handys */
+        flex: 0 0 auto;
+        scroll-snap-align: start; /* Rastet beim Wischen elegant ein */
     }
 }
