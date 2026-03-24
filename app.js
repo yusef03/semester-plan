@@ -20,7 +20,7 @@ const SCHEDULE_DB = [
                 name: "Programmieren 2 (Garmann)",
                 events: [
                     { type: "VL", day: 2, start: "08:15", end: "09:45", room: "1A.102" },
-                    { type: "TUT", day: 2, start: "12:30", end: "14:00", room: "1H.246" },
+                    { type: "TUT", day: 2, start: "12:30", end: "14:00", room: "1H.238" },
                     { type: "H-UE", day: 2, start: "14:15", end: "15:45", room: "1H.018" },
                     { type: "UE", day: 3, start: "10:15", end: "11:45", room: "1H.246" },
                     { type: "UE", day: 3, start: "12:30", end: "14:00", room: "1H.246" },
@@ -223,35 +223,122 @@ const STUDY_PLAN_DB = [
    ========================================================= */
 
 function renderSchedule() {
-    const specialContainer = document.getElementById('special-events-container');
-    if (!specialContainer) return; 
+    const todayContainer = document.getElementById('schedule-today-container');
+    const upcomingContainer = document.getElementById('schedule-upcoming-container');
+    if (!todayContainer || !upcomingContainer) return;
 
-    let specialHtml = `
-        <div class="special-events-title">
-            <i class="fa-solid fa-triangle-exclamation"></i> Wichtige Pflicht-Termine (Seminare)
-        </div>
-        <div class="se-list">
-    `;
+    const now = new Date();
+    const todayDay = now.getDay() === 0 ? 7 : now.getDay(); 
+    const todayStr = now.toISOString().split('T')[0];
+
+    let todayHtml = '';
+    let upcomingHtml = '';
+
+    // 1. DATEN QUELLEN (Beachtet jetzt die Blacklist!)
+    let hiddenSys = JSON.parse(localStorage.getItem('hidden_system_events')) || [];
     
-    SPECIAL_EVENTS_DB.forEach(ev => {
-        const dateParts = ev.date.split('-');
-        const formattedDate = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`;
-        
-        specialHtml += `
-            <div class="se-item">
-                <div>
-                    <div class="se-date">${formattedDate}</div>
-                    <div class="se-time">${ev.start} - ${ev.end} Uhr | Raum: ${ev.room}</div>
-                </div>
-                <span class="we-badge" style="background:var(--danger); color:#fff;">${ev.type}</span>
-            </div>
-        `;
+    const validSpecials = SPECIAL_EVENTS_DB.filter(ev => {
+        let sysId = `sys-${ev.date}-${ev.name}`;
+        return ev.date >= todayStr && !hiddenSys.includes(sysId);
     });
-    specialHtml += `</div>`;
-    specialContainer.innerHTML = specialHtml;
+    
+    const savedUniversalEvents = JSON.parse(localStorage.getItem('my_universal_events')) || [];
+    const validUserEvents = savedUniversalEvents.filter(ex => ex.date >= todayStr);
 
-    const weeklyContainer = document.getElementById('weekly-schedule-container');
-    if (!weeklyContainer) return;
+    // 2. EVENTS FÜR HEUTE
+    let weeklyToday = [];
+    SCHEDULE_DB.forEach(sem => {
+        sem.modules.forEach(mod => {
+            mod.events.forEach(ev => {
+                if (ev.day === todayDay) weeklyToday.push({ ...ev, moduleName: mod.name, isSpecial: false, isUserEvent: false });
+            });
+        });
+    });
+
+    const todayAll = [
+        ...weeklyToday,
+        ...validSpecials.filter(ev => ev.date === todayStr).map(ev => ({ ...ev, moduleName: ev.name, isSpecial: true, isUserEvent: false })),
+        ...validUserEvents.filter(ex => ex.date === todayStr).map(ex => ({ ...ex, moduleName: ex.name, isSpecial: false, isUserEvent: true, start: ex.time }))
+    ].sort((a, b) => getMinutes(a.start || a.time) - getMinutes(b.start || b.time));
+
+    // RENDERN HEUTE
+    if (todayAll.length > 0) {
+        todayAll.forEach(ev => {
+            let borderColor = 'var(--primary)';
+            let badgeText = ev.type || 'TERMIN';
+            let bgStyle = '';
+
+            if (ev.isSpecial) {
+                borderColor = 'var(--danger)';
+            } else if (ev.isUserEvent) {
+                if (ev.type === 'exam') { borderColor = '#ff0000'; badgeText = 'KLAUSUR'; bgStyle = 'background: rgba(255,0,0,0.05);'; }
+                if (ev.type === 'deadline') { borderColor = 'var(--primary)'; badgeText = 'ABGABE'; }
+                if (ev.type === 'other') { borderColor = 'var(--success)'; badgeText = 'TERMIN'; }
+            }
+
+            todayHtml += `
+                <div class="timeline-card" style="border-left-color: ${borderColor}; ${bgStyle}">
+                    <div class="timeline-time-box">
+                        <div style="color: ${borderColor}; font-weight: bold; font-size: 1.1rem;">${ev.start || ev.time}</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">${ev.end || 'ENDE'}</div>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">${ev.moduleName}</div>
+                        <div class="timeline-meta">
+                            <span><i class="fa-solid fa-location-dot"></i> ${ev.room}</span>
+                            <span class="timeline-badge">${badgeText}</span>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    } else {
+        todayHtml = `<div style="text-align: center; color: var(--text-muted); padding: 30px; border: 1px dashed var(--border); border-radius: 12px;">Keine Missionen für heute.</div>`;
+    }
+
+    // 3. KOMMENDE TERMINE (Seminare & Eigene Termine gemischt)
+    const upcomingAll = [
+        ...validSpecials.filter(ev => ev.date > todayStr).map(ev => ({ ...ev, isUserEvent: false })),
+        ...validUserEvents.filter(ex => ex.date > todayStr).map(ex => ({ ...ex, isUserEvent: true }))
+    ].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 8);
+
+    if (upcomingAll.length > 0) {
+        upcomingAll.forEach(ev => {
+            const dateParts = ev.date.split('-');
+            const diff = Math.ceil((new Date(ev.date) - now) / 86400000);
+            
+            let color = '#444';
+            let badgeText = ev.type || 'SEM';
+            if (ev.isUserEvent) {
+                if (ev.type === 'exam') { color = '#ff0000'; badgeText = 'KLAUSUR'; }
+                if (ev.type === 'deadline') { color = 'var(--primary)'; badgeText = 'ABGABE'; }
+                if (ev.type === 'other') { color = 'var(--success)'; badgeText = 'TERMIN'; }
+            }
+
+            upcomingHtml += `
+                <div class="timeline-card" style="border-left-color: ${color}; opacity: 0.9; padding: 12px;">
+                    <div style="min-width: 60px; font-weight: bold; color: #fff; border-right: 1px solid var(--border); margin-right: 15px;">
+                        ${dateParts[2]}.${dateParts[1]}.
+                    </div>
+                    <div class="timeline-content" style="padding-left: 0;">
+                        <div style="font-size: 0.9rem; color: #fff; font-weight: ${(ev.isUserEvent && ev.type === 'exam') ? 'bold' : 'normal'};">${ev.name}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">
+                            ${ev.start || ev.time} Uhr | ${(ev.isUserEvent && ev.type === 'exam') ? `<span style="color:var(--danger)">Noch ${diff} Tage</span>` : `Raum: ${ev.room}`}
+                        </div>
+                    </div>
+                    <span class="timeline-badge">${badgeText}</span>
+                </div>`;
+        });
+    } else {
+        upcomingHtml = `<div style="color: var(--text-muted); font-size: 0.85rem; padding-left: 5px;">Der Radar ist leer. Keine kommenden Termine.</div>`;
+    }
+
+    todayContainer.innerHTML = todayHtml;
+    upcomingContainer.innerHTML = upcomingHtml;
+}
+
+function renderWeeklySchedule() {
+    const container = document.getElementById('weekly-schedule-container');
+    if (!container) return;
 
     const days = [
         { id: 1, name: "Montag" },
@@ -278,42 +365,43 @@ function renderSchedule() {
         });
     });
 
-    let weeklyHtml = '';
+    let html = '';
     days.forEach(dayObj => {
         let dayEvents = allWeeklyEvents
             .filter(e => e.day === dayObj.id)
             .sort((a, b) => a.startMins - b.startMins);
 
-        weeklyHtml += `
-            <div class="day-column">
-                <div class="day-header">${dayObj.name}</div>
-                <div class="day-content">
+html += `
+            <div class="weekly-day-card">
+                <div style="background: rgba(255,255,255,0.03); padding: 12px; text-align: center; font-weight: bold; border-bottom: 1px solid var(--border); color: var(--primary); letter-spacing: 1px; text-transform: uppercase; font-size: 0.85rem;">
+                    ${dayObj.name}
+                </div>
+                <div style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
         `;
 
         if (dayEvents.length === 0) {
-            weeklyHtml += `<div class="free-day">Keine Vorlesungen! 🎉</div>`;
+            html += `<div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0; font-style: italic;">Keine Vorlesungen 🎉</div>`;
         } else {
             dayEvents.forEach(ev => {
-                weeklyHtml += `
-                    <div class="weekly-event">
-                        <div class="we-time">
-                            <span>${ev.start}</span>
-                            <span class="we-time-end">${ev.end}</span>
+                html += `
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+                        <div style="color: var(--primary); font-weight: bold; font-size: 0.85rem; margin-bottom: 6px;">
+                            <i class="fa-regular fa-clock"></i> ${ev.start} - ${ev.end}
                         </div>
-                        <div class="we-info">
-                            <div class="we-title">${ev.moduleName}</div>
-                            <div class="we-meta">
-                                <span><i class="fa-solid fa-location-dot"></i> ${ev.room}</span>
-                                <span class="we-badge">${ev.type}</span>
-                            </div>
+                        <div style="color: #fff; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; line-height: 1.3;">
+                            ${ev.moduleName}
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; color: var(--text-muted);">
+                            <span><i class="fa-solid fa-location-dot"></i> ${ev.room}</span>
+                            <span style="background: rgba(255,255,255,0.1); padding: 3px 6px; border-radius: 4px; font-weight: bold;">${ev.type}</span>
                         </div>
                     </div>
                 `;
             });
         }
-        weeklyHtml += `</div></div>`;
+        html += `</div></div>`;
     });
-    weeklyContainer.innerHTML = weeklyHtml;
+    container.innerHTML = html;
 }
 
 function renderGrid() {
@@ -526,6 +614,10 @@ function getEventsForDate(d) {
     
     let evs = [];
     
+    // 1. Blacklist laden (Damit ausgeblendete Seminare nicht im Dashboard nerven)
+    let hiddenSys = JSON.parse(localStorage.getItem('hidden_system_events')) || [];
+    
+    // 2. Vorlesungen laden
     SCHEDULE_DB.forEach(sem => {
         sem.modules.forEach(mod => {
             mod.events.forEach(ev => {
@@ -544,8 +636,10 @@ function getEventsForDate(d) {
         });
     });
     
+    // 3. System Seminare laden (Wenn sie NICHT ausgeblendet sind)
     SPECIAL_EVENTS_DB.forEach(ev => {
-        if (ev.date === dateStr) {
+        let sysId = `sys-${ev.date}-${ev.name}`; 
+        if (ev.date === dateStr && !hiddenSys.includes(sysId)) { 
             evs.push({
                 moduleName: ev.name,
                 type: ev.type,
@@ -554,6 +648,27 @@ function getEventsForDate(d) {
                 room: ev.room,
                 startMins: getMinutes(ev.start),
                 endMins: getMinutes(ev.end)
+            });
+        }
+    });
+
+    // 4. Eigene Termine laden (Klausuren, Abgaben, etc.) in den Dashboard-Radar
+    let userEvents = JSON.parse(localStorage.getItem('my_universal_events')) || [];
+    userEvents.forEach(ev => {
+        if (ev.date === dateStr) {
+            let startM = getMinutes(ev.time);
+            let endM = startM + 90; // Standard 90 Minuten blocken für Custom-Events
+            let endStr = `${String(Math.floor(endM/60)).padStart(2,'0')}:${String(endM%60).padStart(2,'0')}`;
+            let tBadge = ev.type === 'exam' ? 'KLAUSUR' : (ev.type === 'deadline' ? 'ABGABE' : 'TERMIN');
+            
+            evs.push({
+                moduleName: ev.name,
+                type: tBadge,
+                start: ev.time,
+                end: endStr,
+                room: ev.room,
+                startMins: startM,
+                endMins: endM
             });
         }
     });
@@ -671,30 +786,349 @@ function updateLiveSystem() {
     if(previewList.innerHTML === '') {
          previewList.innerHTML = '<div class="preview-empty">Alle Vorlesungen für heute sind geschafft! Gönn dir was!</div>';
     }
+
+    // --- ROUTINE-CHECK FÜR DAS DASHBOARD ---
+    const existingBanner = document.getElementById('today-routine-banner');
+    if (existingBanner) {
+        existingBanner.remove();
+    }
+
+    const savedRoutine = JSON.parse(localStorage.getItem('my_weekly_routine')) || {};
+    const todayIndex = now.getDay() === 0 ? 6 : now.getDay() - 1; 
+    const todayRoutine = savedRoutine[todayIndex];
+
+    if (todayRoutine) {
+        const routineInfo = `
+            <div id="today-routine-banner" style="background: rgba(232, 93, 4, 0.1); border: 1px solid rgba(232, 93, 4, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 20px;">
+                <div style="font-size: 0.7rem; color: var(--primary); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Heutiger Lern-Fokus</div>
+                <div style="font-size: 1rem; color: #fff; margin-top: 4px; font-weight: 600;">${todayRoutine.start} - ${todayRoutine.end} Uhr</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px;">
+                    ${todayRoutine.modules.map(m => `<span style="background: var(--primary); color: #000; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${m}</span>`).join('')}
+                </div>
+            </div>
+        `;
+        previewHeader.insertAdjacentHTML('beforebegin', routineInfo);
+    }
 }
 
 /* =========================================================
-   5. NAVIGATION & INITIALISIERUNG
+   5. NAVIGATION & CORE SYSTEM
    ========================================================= */
 
 function switchTab(tabId, clickedElement) {
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    document.querySelectorAll('.nav-item').forEach(btn => {
-        btn.classList.remove('active');
-    });
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
     
-    document.getElementById(tabId).classList.add('active');
-    clickedElement.classList.add('active');
+    const targetTab = document.getElementById(tabId);
+    if(targetTab) targetTab.classList.add('active');
+    if(clickedElement) clickedElement.classList.add('active');
+
+    // WICHTIG: Hier wurden die Funktionen synchronisiert!
+    if(tabId === 'tab-routine') renderRoutineCards();
+    if(tabId === 'tab-focus') renderUniversalEvents();
+    if(tabId === 'tab-schedule') renderSchedule();
 }
 
+/* =========================================================
+   6. ROUTINE SYSTEM (SMART PILLS & BOTTOM SHEET)
+   ========================================================= */
+
+const DAYS_OF_WEEK = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
+let selectedPills = []; 
+let currentEditingDay = null;
+
+function renderRoutineCards() {
+    const container = document.getElementById('routine-cards-container');
+    if (!container) return;
+
+    const savedRoutine = JSON.parse(localStorage.getItem('my_weekly_routine')) || {};
+    let html = '';
+
+    DAYS_OF_WEEK.forEach((day, index) => {
+        const data = savedRoutine[index];
+        const hasData = data && data.modules.length > 0;
+
+        html += `
+            <div class="routine-card" onclick="openRoutineEditor(${index})">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <div style="font-weight: bold; color: var(--text-main); font-size: 1.1rem;">${day}</div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">
+                            ${hasData ? `<i class="fa-regular fa-clock"></i> ${data.start} - ${data.end}` : 'Kein Fokus geplant'}
+                        </div>
+                    </div>
+                    ${hasData ? '<i class="fa-solid fa-circle-check" style="color: var(--success);"></i>' : '<i class="fa-solid fa-circle-plus" style="color: var(--border);"></i>'}
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;">
+                    ${hasData ? data.modules.map(m => `<span style="background:rgba(232,93,4,0.1); color:var(--primary); padding:2px 8px; border-radius:4px; font-size:0.75rem; border:1px solid rgba(232,93,4,0.2);">${m}</span>`).join('') : ''}
+                </div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+function openRoutineEditor(dayIndex) {
+    currentEditingDay = dayIndex;
+    selectedPills = [];
+    
+    document.getElementById('routine-modal-day').innerText = DAYS_OF_WEEK[dayIndex];
+    const modal = document.getElementById('routine-modal');
+    modal.style.display = 'flex';
+
+    const savedRoutine = JSON.parse(localStorage.getItem('my_weekly_routine')) || {};
+    const data = savedRoutine[dayIndex];
+    
+    if(data) {
+        document.getElementById('routine-time-start').value = data.start;
+        document.getElementById('routine-time-end').value = data.end;
+        selectedPills = [...data.modules];
+    } else {
+        document.getElementById('routine-time-start').value = "";
+        document.getElementById('routine-time-end').value = "";
+    }
+
+    renderPills();
+}
+
+function renderPills() {
+    const container = document.getElementById('routine-pills-container');
+    container.innerHTML = '';
+
+    DB.forEach(sem => {
+        sem.modules.forEach(mod => {
+            let isPassed = localStorage.getItem(mod.id) === 'true' || (mod.status === 'passed' && localStorage.getItem(mod.id) !== 'false');
+            if (!isPassed) {
+                const isActive = selectedPills.includes(mod.name);
+                const pill = document.createElement('div');
+                pill.className = `module-pill ${isActive ? 'active' : ''}`;
+                pill.innerText = mod.name;
+                pill.onclick = () => togglePill(mod.name);
+                container.appendChild(pill);
+            }
+        });
+    });
+}
+
+function togglePill(moduleName) {
+    if (selectedPills.includes(moduleName)) {
+        selectedPills = selectedPills.filter(name => name !== moduleName);
+    } else {
+        selectedPills.push(moduleName);
+    }
+    renderPills();
+}
+
+function saveRoutine() {
+    const start = document.getElementById('routine-time-start').value;
+    const end = document.getElementById('routine-time-end').value;
+
+    if(!start || !end || selectedPills.length === 0) {
+        alert("Bitte Zeit und mindestens ein Modul wählen!");
+        return;
+    }
+
+    let savedRoutine = JSON.parse(localStorage.getItem('my_weekly_routine')) || {};
+    savedRoutine[currentEditingDay] = {
+        start: start,
+        end: end,
+        modules: selectedPills
+    };
+
+    localStorage.setItem('my_weekly_routine', JSON.stringify(savedRoutine));
+    document.getElementById('routine-modal').style.display = 'none';
+    renderRoutineCards();
+    updateLiveSystem(); 
+}
+
+function clearRoutineDay() {
+    if(!confirm("Diesen Tag wirklich leeren?")) return;
+    let savedRoutine = JSON.parse(localStorage.getItem('my_weekly_routine')) || {};
+    delete savedRoutine[currentEditingDay];
+    localStorage.setItem('my_weekly_routine', JSON.stringify(savedRoutine));
+    document.getElementById('routine-modal').style.display = 'none';
+    renderRoutineCards();
+    updateLiveSystem();
+}
+
+/* =========================================================
+   7. UNIVERSAL MISSION HUB (EVENTS & EXAMS)
+   ========================================================= */
+
+let currentEventType = 'exam'; 
+let missionFilter = 'all'; 
+let editingEventId = null; 
+
+function setEventType(type, btn) {
+    currentEventType = type;
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function filterMissionList(filter, btn) {
+    missionFilter = filter;
+    btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderUniversalEvents();
+}
+
+function saveUniversalEvent() {
+    const title = document.getElementById('event-title').value;
+    const date = document.getElementById('event-date').value;
+    const time = document.getElementById('event-time').value;
+    const loc = document.getElementById('event-location').value;
+
+    if (!title || !date || !time) { 
+        alert("Mission fehlgeschlagen: Titel, Datum und Zeit sind Pflicht!"); 
+        return; 
+    }
+
+    let events = JSON.parse(localStorage.getItem('my_universal_events')) || [];
+    
+    // Bearbeiten-Logik (User überschreibt alten Termin)
+    if (editingEventId) {
+        let index = events.findIndex(e => e.id === editingEventId);
+        if (index > -1) {
+            events[index].name = title;
+            events[index].date = date;
+            events[index].time = time;
+            events[index].room = loc || "TBA";
+            events[index].type = currentEventType;
+        }
+        editingEventId = null; 
+        document.querySelector('#tab-focus .btn-save').innerText = "In Zeitplan aufnehmen";
+    } else {
+        // Neuer Termin
+        events.push({ id: Date.now(), type: currentEventType, name: title, date: date, time: time, room: loc || "TBA" });
+    }
+
+    localStorage.setItem('my_universal_events', JSON.stringify(events));
+    
+    document.getElementById('event-title').value = "";
+    document.getElementById('event-location').value = "";
+    
+    renderUniversalEvents(); 
+    if(typeof renderSchedule === 'function') renderSchedule(); 
+    if(typeof updateLiveSystem === 'function') updateLiveSystem();
+}
+
+function editUserEvent(id) {
+    let events = JSON.parse(localStorage.getItem('my_universal_events')) || [];
+    let ev = events.find(e => e.id === id);
+    if(!ev) return;
+
+    document.getElementById('event-title').value = ev.name;
+    document.getElementById('event-date').value = ev.date;
+    document.getElementById('event-time').value = ev.time;
+    document.getElementById('event-location').value = ev.room;
+
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    let btnId = ev.type === 'exam' ? 'type-exam' : (ev.type === 'deadline' ? 'type-deadline' : 'type-other');
+    let btn = document.getElementById(btnId);
+    if(btn) btn.classList.add('active');
+    currentEventType = ev.type;
+
+    editingEventId = id;
+    document.querySelector('#tab-focus .btn-save').innerText = "Änderungen speichern";
+    window.scrollTo(0, 0); 
+}
+
+function renderUniversalEvents() {
+    const container = document.getElementById('universal-events-container');
+    if (!container) return;
+
+    let userEvents = JSON.parse(localStorage.getItem('my_universal_events')) || [];
+    let hiddenSys = JSON.parse(localStorage.getItem('hidden_system_events')) || [];
+    
+    let systemEvents = SPECIAL_EVENTS_DB.map(se => {
+        let sysId = `sys-${se.date}-${se.name}`;
+        return { id: sysId, type: 'special', name: se.name, date: se.date, time: se.start, room: se.room, isSystem: true, isHidden: hiddenSys.includes(sysId) };
+    });
+
+    let allMissions = [...userEvents, ...systemEvents];
+    if (missionFilter !== 'all') allMissions = allMissions.filter(m => m.type === missionFilter);
+    allMissions.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    let html = '';
+    const today = new Date().toISOString().split('T')[0];
+
+    allMissions.forEach(m => {
+        const isPast = m.date < today;
+        let icon = 'calendar-day'; let color = 'var(--text-muted)';
+        if(m.type === 'exam') { icon = 'graduation-cap'; color = 'var(--danger)'; }
+        if(m.type === 'deadline') { icon = 'clock'; color = 'var(--primary)'; }
+        if(m.type === 'special') { icon = 'university'; color = 'var(--success)'; }
+        if(m.type === 'other') { icon = 'star'; color = 'var(--secondary)'; }
+        
+        let opacity = (isPast || m.isHidden) ? '0.4' : '1';
+
+        html += `
+            <div style="background: ${isPast ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)'}; border: 1px solid ${isPast ? '#222' : 'var(--border)'}; border-radius: 12px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; opacity: ${opacity}; transition: all 0.3s ease;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="color: ${color}; font-size: 1.1rem; width: 25px; text-align: center;"><i class="fa-solid fa-${icon}"></i></div>
+                    <div>
+                        <div style="font-weight: bold; color: ${isPast ? 'var(--text-muted)' : '#fff'}; font-size: 0.9rem;">
+                            ${m.name} ${m.isSystem ? '<small style="color:#555;">(Uni)</small>' : ''} ${m.isHidden ? '<small style="color:var(--danger); margin-left:5px;">(Ausgeblendet)</small>' : ''}
+                        </div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted);">${m.date.split('-').reverse().join('.')} | ${m.time} Uhr | ${m.room}</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    ${m.isSystem ? 
+                        (m.isHidden ? 
+                            `<i class="fa-solid fa-eye" style="color: var(--success); cursor: pointer; padding: 10px;" onclick="toggleSystemEvent('${m.id}')" title="Wieder einblenden"></i>` : 
+                            `<i class="fa-solid fa-eye-slash" style="color: #444; cursor: pointer; padding: 10px;" onclick="toggleSystemEvent('${m.id}')" title="Ausblenden"></i>`
+                        ) : 
+                        `
+                        <i class="fa-solid fa-pen" style="color: var(--primary); cursor: pointer; padding: 10px;" onclick="editUserEvent(${m.id})" title="Bearbeiten"></i>
+                        <i class="fa-solid fa-trash-can" style="color: var(--danger); cursor: pointer; padding: 10px;" onclick="deleteUserEvent(${m.id})" title="Löschen"></i>
+                        `
+                    }
+                </div>
+            </div>`;
+    });
+    container.innerHTML = html || '<div style="text-align:center; padding:20px; color:var(--text-muted);">Keine Einträge gefunden.</div>';
+}
+
+function toggleSystemEvent(id) {
+    let hiddenSys = JSON.parse(localStorage.getItem('hidden_system_events')) || [];
+    if (hiddenSys.includes(id)) {
+        hiddenSys = hiddenSys.filter(item => item !== id); 
+    } else {
+        if(!confirm("Uni-Seminar wirklich ausblenden? Es verschwindet dann aus dem Radar.")) return;
+        hiddenSys.push(id); 
+    }
+    localStorage.setItem('hidden_system_events', JSON.stringify(hiddenSys));
+    renderUniversalEvents(); 
+    if(typeof renderSchedule === 'function') renderSchedule(); 
+    if(typeof updateLiveSystem === 'function') updateLiveSystem();
+}
+
+function deleteUserEvent(id) {
+    if(!confirm("Ereignis wirklich löschen?")) return;
+    let events = JSON.parse(localStorage.getItem('my_universal_events')) || [];
+    localStorage.setItem('my_universal_events', JSON.stringify(events.filter(e => e.id !== id)));
+    renderUniversalEvents(); 
+    if(typeof renderSchedule === 'function') renderSchedule(); 
+    if(typeof updateLiveSystem === 'function') updateLiveSystem();
+}
+
+/* =========================================================
+   8. INITIALISIERUNG
+   ========================================================= */
+
 function init() {
-    renderSchedule(); 
+    // Diese Funktionen bauen das Interface beim Start auf
+    renderSchedule();
+    renderWeeklySchedule();
     renderGrid();
     renderStudyPlan();
     calculateStats();
     
+    // Die Mission-Hub Liste zeichnen
+    renderUniversalEvents();
+    
+    // Dashboard starten
     updateLiveSystem();
     setInterval(updateLiveSystem, 1000);
 }
