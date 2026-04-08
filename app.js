@@ -12,8 +12,8 @@ const SCHEDULE_DB = [
                     { type: "VL", day: 1, start: "08:15", end: "09:45", room: "1A.102" },
                     { type: "UE", day: 1, start: "14:15", end: "15:45", room: "1H.207" },
                     { type: "UE", day: 1, start: "16:00", end: "17:30", room: "1H.207" },
-                    { type: "UE", day: 5, start: "12:30", end: "14:00", room: "1H.021" },
-                    { type: "UE", day: 5, start: "16:00", end: "17:30", room: "1H.019" }
+                    { type: "UE", day: 4, start: "12:30", end: "14:00", room: "1H.021" },
+                    { type: "UE", day: 4, start: "16:00", end: "17:30", room: "1H.019" }
                 ]
             },
             {
@@ -32,12 +32,10 @@ const SCHEDULE_DB = [
                 name: "Algorithmen & Datenstr. (Ginkel)",
                 events: [
                     { type: "VL", day: 4, start: "08:15", end: "09:45", room: "1A.102" },
-                    { type: "UE", day: 3, start: "10:15", end: "11:45", room: "1H.019" },
                     { type: "UE", day: 4, start: "10:15", end: "11:45", room: "1H.207" },
                     { type: "UE", day: 4, start: "12:30", end: "14:00", room: "1H.207" },
                     { type: "UE", day: 5, start: "14:15", end: "15:45", room: "1H.019" },
-                    { type: "Z-UE", day: 3, start: "16:00", end: "17:30", room: "Moodle" },
-                    { type: "Z-UE", day: 4, start: "16:00", end: "17:30", room: "Moodle" }
+                    { type: "Z-UE", day: 3, start: "16:00", end: "17:30", room: "Moodle" }
                 ]
             }
         ]
@@ -50,7 +48,6 @@ const SCHEDULE_DB = [
                 events: [
                     { type: "VL", day: 1, start: "10:15", end: "11:45", room: "1A.102" },
                     { type: "UE", day: 1, start: "12:30", end: "14:00", room: "1H.246" },
-                    { type: "UE", day: 4, start: "10:15", end: "11:45", room: "1H.238" },
                     { type: "UE", day: 5, start: "08:15", end: "09:45", room: "1H.238" },
                     { type: "UE", day: 5, start: "10:15", end: "11:45", room: "1H.238" }
                 ]
@@ -59,10 +56,9 @@ const SCHEDULE_DB = [
                 name: "Software-Engineering I (Bruns)",
                 events: [
                     { type: "VL", day: 4, start: "10:15", end: "11:45", room: "1H.018" },
-                    { type: "UE", day: 4, start: "16:00", end: "17:30", room: "1H.238" },
                     { type: "UE", day: 4, start: "14:15", end: "15:45", room: "1H.238" },
                     { type: "UE", day: 4, start: "16:00", end: "17:30", room: "1H.238" },
-                    { type: "UE", day: 5, start: "17:30", end: "19:00", room: "1H.238" }
+                    { type: "UE", day: 4, start: "17:30", end: "19:00", room: "1H.238" }
                 ]
             }
         ]
@@ -70,12 +66,8 @@ const SCHEDULE_DB = [
 ];
 
 const SPECIAL_EVENTS_DB = [
-    { date: "2026-03-13", name: "Seminar (Pflicht)", type: "SEM", start: "12:30", end: "13:30", room: "1H.2.62" },
-    { date: "2026-04-10", name: "Seminar (Pflicht)", type: "SEM", start: "12:30", end: "17:30", room: "1H.2.62" },
-    { date: "2026-04-17", name: "Seminar (Pflicht)", type: "SEM", start: "12:30", end: "17:30", room: "1H.2.07" },
-    { date: "2026-05-22", name: "Seminar (Pflicht)", type: "SEM", start: "12:30", end: "18:30", room: "1H.2.07" },
-    { date: "2026-05-29", name: "Seminar (Pflicht)", type: "SEM", start: "12:30", end: "18:30", room: "1H.2.07" },
-    { date: "2026-06-05", name: "Seminar (Pflicht)", type: "SEM", start: "12:30", end: "18:30", room: "1H.2.07" }
+    { date: "2026-04-17", name: "Seminar (Besprech.)", type: "SEM", start: "13:00", end: "13:30", room: "1H.2.07" },
+    { date: "2026-06-05", name: "Seminar (Vortrag)", type: "SEM", start: "13:15", end: "14:30", room: "1H.2.07" }
 ];
 
 const DB = [
